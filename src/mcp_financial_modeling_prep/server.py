@@ -1,21 +1,19 @@
 """MCP server implementation for Financial Modeling Prep API."""
 
 import asyncio
-import os
-from typing import Any, Dict, List, Optional, Sequence
 
+import mcp.server.stdio
 from mcp.server import Server
 from mcp.server.models import InitializationOptions
-from mcp.types import Resource, Tool, Prompt
-import mcp.server.stdio
+from mcp.types import Prompt, Resource, Tool
 
 
 def create_server() -> Server:
     """Create and configure the MCP server."""
-    server = Server("financial-modeling-prep")
-    
+    server: Server = Server("financial-modeling-prep")
+
     @server.list_tools()
-    async def handle_list_tools() -> List[Tool]:
+    async def handle_list_tools() -> list[Tool]:
         """List available financial tools."""
         return [
             Tool(
@@ -26,11 +24,11 @@ def create_server() -> Server:
                     "properties": {
                         "symbol": {
                             "type": "string",
-                            "description": "Stock symbol (e.g., AAPL)"
+                            "description": "Stock symbol (e.g., AAPL)",
                         }
                     },
-                    "required": ["symbol"]
-                }
+                    "required": ["symbol"],
+                },
             ),
             Tool(
                 name="get_income_statement",
@@ -40,11 +38,11 @@ def create_server() -> Server:
                     "properties": {
                         "symbol": {
                             "type": "string",
-                            "description": "Stock symbol (e.g., AAPL)"
+                            "description": "Stock symbol (e.g., AAPL)",
                         }
                     },
-                    "required": ["symbol"]
-                }
+                    "required": ["symbol"],
+                },
             ),
             Tool(
                 name="get_stock_quote",
@@ -54,50 +52,52 @@ def create_server() -> Server:
                     "properties": {
                         "symbol": {
                             "type": "string",
-                            "description": "Stock symbol (e.g., AAPL)"
+                            "description": "Stock symbol (e.g., AAPL)",
                         }
                     },
-                    "required": ["symbol"]
-                }
-            )
+                    "required": ["symbol"],
+                },
+            ),
         ]
-    
+
     @server.list_resources()
-    async def handle_list_resources() -> List[Resource]:
+    async def handle_list_resources() -> list[Resource]:
         """List available financial resources."""
+        from pydantic import AnyUrl
         return [
             Resource(
-                uri="financial://templates/analysis",
+                uri=AnyUrl("financial://templates/analysis"),
                 name="Financial Analysis Templates",
                 description="Templates for financial analysis",
-                mimeType="text/plain"
+                mimeType="text/plain",
             )
         ]
-    
+
     @server.list_prompts()
-    async def handle_list_prompts() -> List[Prompt]:
+    async def handle_list_prompts() -> list[Prompt]:
         """List available financial analysis prompts."""
+        from mcp.types import PromptArgument
         return [
             Prompt(
                 name="analyze_company",
                 description="Analyze a company's financial performance",
                 arguments=[
-                    {
-                        "name": "symbol",
-                        "description": "Stock symbol to analyze",
-                        "required": True
-                    }
-                ]
+                    PromptArgument(
+                        name="symbol",
+                        description="Stock symbol to analyze",
+                        required=True,
+                    )
+                ],
             )
         ]
-    
+
     return server
 
 
 async def main():
     """Main entry point for the server."""
     server = create_server()
-    
+
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,
@@ -108,8 +108,8 @@ async def main():
                 capabilities=server.get_capabilities(
                     notification_options=None,
                     experimental_capabilities=None,
-                )
-            )
+                ),
+            ),
         )
 
 

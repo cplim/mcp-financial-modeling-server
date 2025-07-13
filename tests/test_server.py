@@ -1,6 +1,5 @@
 """Test cases for the MCP server."""
 
-import pytest
 from mcp_financial_modeling_prep.server import create_server
 
 
@@ -20,5 +19,6 @@ class TestMCPServer:
     def test_server_is_instance(self):
         """Test that the server is a proper MCP Server instance."""
         from mcp.server import Server
+
         server = create_server()
         assert isinstance(server, Server)
