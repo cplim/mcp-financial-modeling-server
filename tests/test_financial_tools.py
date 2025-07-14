@@ -3,6 +3,7 @@
 from unittest.mock import patch
 
 import pytest
+from mcp.types import CallToolRequest, CallToolRequestParams
 
 from mcp_financial_modeling_prep.fmp_client import FMPClient
 from mcp_financial_modeling_prep.server import create_server
@@ -24,8 +25,10 @@ class TestFinancialTools:
     @pytest.mark.asyncio
     async def test_get_company_profile_tool(self, server, fmp_client):
         """Test the get_company_profile tool handler."""
-        # Mock the underlying HTTP request
-        with patch.object(fmp_client, "_make_request") as mock_request:
+        # Mock the underlying HTTP request on the FMPClient class
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
             mock_request.return_value = [
                 {
                     "symbol": "AAPL",
@@ -41,21 +44,32 @@ class TestFinancialTools:
             assert result["symbol"] == "AAPL"
             assert result["companyName"] == "Apple Inc."
 
-            # Now test the tool handler (this will require implementing the handler)
-            # Execute the tool
-            result = await server._execute_tool(
-                "get_company_profile", {"symbol": "AAPL"}
+            # Now test the tool handler through the MCP server
+            # Access the tool handler from request_handlers
+            tool_handler = server.request_handlers[CallToolRequest]
+
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_company_profile", arguments={"symbol": "AAPL"}
+                ),
             )
 
-            assert result["content"][0]["type"] == "text"
-            assert "Apple Inc." in result["content"][0]["text"]
-            assert "Technology" in result["content"][0]["text"]
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "Apple Inc." in result.root.content[0].text
+            assert "Technology" in result.root.content[0].text
 
     @pytest.mark.asyncio
     async def test_get_income_statement_tool(self, server, fmp_client):
         """Test the get_income_statement tool handler."""
-        # Mock the underlying HTTP request
-        with patch.object(fmp_client, "_make_request") as mock_request:
+        # Mock the underlying HTTP request on the FMPClient class
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
             mock_request.return_value = [
                 {
                     "symbol": "AAPL",
@@ -72,20 +86,31 @@ class TestFinancialTools:
             assert result["symbol"] == "AAPL"
             assert result["revenue"] == 383285000000
 
-            # Now test the tool handler
-            result = await server._execute_tool(
-                "get_income_statement", {"symbol": "AAPL"}
+            # Now test the tool handler through the MCP server
+            tool_handler = server.request_handlers[CallToolRequest]
+
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_income_statement", arguments={"symbol": "AAPL"}
+                ),
             )
 
-            assert result["content"][0]["type"] == "text"
-            assert "383,285,000,000" in result["content"][0]["text"]
-            assert "Revenue" in result["content"][0]["text"]
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "383,285,000,000" in result.root.content[0].text
+            assert "Revenue" in result.root.content[0].text
 
     @pytest.mark.asyncio
     async def test_get_stock_quote_tool(self, server, fmp_client):
         """Test the get_stock_quote tool handler."""
-        # Mock the underlying HTTP request
-        with patch.object(fmp_client, "_make_request") as mock_request:
+        # Mock the underlying HTTP request on the FMPClient class
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
             mock_request.return_value = [
                 {
                     "symbol": "AAPL",
@@ -104,18 +129,31 @@ class TestFinancialTools:
             assert result["symbol"] == "AAPL"
             assert result["price"] == 150.25
 
-            # Now test the tool handler
-            result = await server._execute_tool("get_stock_quote", {"symbol": "AAPL"})
+            # Now test the tool handler through the MCP server
+            tool_handler = server.request_handlers[CallToolRequest]
 
-            assert result["content"][0]["type"] == "text"
-            assert "150.25" in result["content"][0]["text"]
-            assert "1.25%" in result["content"][0]["text"]
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_stock_quote", arguments={"symbol": "AAPL"}
+                ),
+            )
+
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "150.25" in result.root.content[0].text
+            assert "1.25%" in result.root.content[0].text
 
     @pytest.mark.asyncio
     async def test_tool_error_handling(self, server, fmp_client):
         """Test error handling in financial tools."""
         # Mock the underlying HTTP request to raise an exception
-        with patch.object(fmp_client, "_make_request") as mock_request:
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
             mock_request.side_effect = Exception("API request failed")
 
             # Test that the client raises the exception
@@ -123,16 +161,25 @@ class TestFinancialTools:
                 await fmp_client.get_company_profile("INVALID")
 
             # Test that the tool handler catches and formats the error
-            result = await server._execute_tool(
-                "get_company_profile", {"symbol": "INVALID"}
+            tool_handler = server.request_handlers[CallToolRequest]
+
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_company_profile", arguments={"symbol": "INVALID"}
+                ),
             )
 
-            assert result["content"][0]["type"] == "text"
-            assert "Error" in result["content"][0]["text"]
-            assert "API request failed" in result["content"][0]["text"]
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "Error" in result.root.content[0].text
+            assert "API request failed" in result.root.content[0].text
 
     @pytest.mark.asyncio
-    async def test_empty_api_key_handling(self, server):
+    async def test_empty_api_key_handling(self):
         """Test handling of empty API key."""
         # Create client with empty API key
         client_empty_key = FMPClient(api_key="")
@@ -142,16 +189,31 @@ class TestFinancialTools:
             await client_empty_key.get_company_profile("AAPL")
 
         # Test that the tool handler catches and formats the error
-        result = await server._execute_tool("get_company_profile", {"symbol": "AAPL"})
+        # Create a server with empty API key
+        server_empty_key = create_server("")
+        tool_handler = server_empty_key.request_handlers[CallToolRequest]
 
-        assert result["content"][0]["type"] == "text"
-        assert "API key is required" in result["content"][0]["text"]
+        # Create a mock request
+        request = CallToolRequest(
+            method="tools/call",
+            params=CallToolRequestParams(
+                name="get_company_profile", arguments={"symbol": "AAPL"}
+            ),
+        )
+
+        # Call the handler
+        result = await tool_handler(request)
+
+        assert result.root.content[0].type == "text"
+        assert "API key is required" in result.root.content[0].text
 
     @pytest.mark.asyncio
     async def test_invalid_symbol_handling(self, server, fmp_client):
         """Test handling of invalid stock symbols."""
         # Mock the underlying HTTP request to return empty array
-        with patch.object(fmp_client, "_make_request") as mock_request:
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
             mock_request.return_value = []
 
             # Test that the client returns empty dict
@@ -159,9 +221,18 @@ class TestFinancialTools:
             assert result == {}
 
             # Test that the tool handler handles empty data
-            result = await server._execute_tool(
-                "get_company_profile", {"symbol": "INVALID"}
+            tool_handler = server.request_handlers[CallToolRequest]
+
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_company_profile", arguments={"symbol": "INVALID"}
+                ),
             )
 
-            assert result["content"][0]["type"] == "text"
-            assert "No data found" in result["content"][0]["text"]
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "No data found" in result.root.content[0].text
