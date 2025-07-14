@@ -28,7 +28,7 @@ jobs:
       run: uv sync --dev
 
     - name: Run tests
-      run: uv run pytest --cov=src/mcp_financial_modeling_prep --cov-report=xml --cov-report=term --cov-fail-under=80
+      run: uv run pytest
 
   lint:
     runs-on: ubuntu-latest

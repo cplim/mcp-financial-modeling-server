@@ -16,9 +16,6 @@ uv sync --dev
 # Run all tests
 uv run pytest
 
-# Run tests with coverage report
-uv run pytest --cov=src/mcp_financial_modeling_prep --cov-report=term
-
 # Run a single test file
 uv run pytest tests/test_server.py
 
@@ -84,13 +81,12 @@ This is a **Model Context Protocol (MCP) server** that integrates with the Finan
 **CI/CD Pipeline**: 
 - Multi-Python version testing (3.10, 3.11, 3.12)
 - Code quality gates: black formatting, ruff linting, mypy type checking
-- Test coverage reporting with codecov integration
 - Automatic builds on main branch pushes
 
 **Package Management**:
 - Uses uv with dependency groups for development tools
 - All dependencies defined in pyproject.toml
-- Development dependencies include pytest, coverage tools, and code quality tools
+- Development dependencies include pytest and code quality tools
 
 ## Environment Configuration
 
