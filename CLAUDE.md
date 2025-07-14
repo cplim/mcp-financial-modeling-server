@@ -25,17 +25,19 @@ uv run pytest tests/test_server.py::TestMCPServer::test_server_creation
 
 ### Code Quality
 ```bash
-# Format code (required before commits)
-uv run black .
-
-# Lint code (must pass CI)
+# ALWAYS run before committing (required for CI to pass)
+uv run black --check .
 uv run ruff check .
-
-# Type checking (must pass CI)
 uv run mypy .
 
 # Fix auto-fixable linting issues
 uv run ruff check . --fix
+
+# Format code (run after fixing lint issues)
+uv run black .
+
+# Run all quality checks in one command
+uv run black --check . && uv run ruff check . && uv run mypy .
 ```
 
 ### Build and Package
@@ -67,6 +69,12 @@ This is a **Model Context Protocol (MCP) server** that integrates with the Finan
 - Write failing tests first, then implement functionality to pass them
 - All new features should follow this pattern
 - Current test coverage focuses on server creation and basic functionality
+
+**Pre-Commit Requirements**:
+- ALWAYS run `uv run black --check .` before committing
+- ALWAYS run `uv run ruff check .` before committing  
+- ALWAYS run `uv run mypy .` before committing
+- CI will fail if any of these checks fail
 
 **MCP Integration Points**:
 - Server uses decorators (`@server.list_tools()`, `@server.list_resources()`, `@server.list_prompts()`) to register handlers

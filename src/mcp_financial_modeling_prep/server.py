@@ -64,6 +64,7 @@ def create_server() -> Server:
     async def handle_list_resources() -> list[Resource]:
         """List available financial resources."""
         from pydantic import AnyUrl
+
         return [
             Resource(
                 uri=AnyUrl("financial://templates/analysis"),
@@ -77,6 +78,7 @@ def create_server() -> Server:
     async def handle_list_prompts() -> list[Prompt]:
         """List available financial analysis prompts."""
         from mcp.types import PromptArgument
+
         return [
             Prompt(
                 name="analyze_company",

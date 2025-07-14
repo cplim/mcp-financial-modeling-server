@@ -52,10 +52,17 @@ uv run pytest
 
 ### Code Quality
 
+**Before every commit, run:**
 ```bash
-uv run black .
+uv run black --check .
 uv run ruff check .
 uv run mypy .
+```
+
+**To fix formatting issues:**
+```bash
+uv run ruff check . --fix
+uv run black .
 ```
 
 ## License
