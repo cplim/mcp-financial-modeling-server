@@ -16,11 +16,17 @@ uv sync --dev
 # Run all tests
 uv run pytest
 
+# Run tests with coverage report
+uv run pytest --cov=src/mcp_financial_modeling_prep --cov-report=term
+
 # Run a single test file
 uv run pytest tests/test_server.py
+uv run pytest tests/test_financial_tools.py
+uv run pytest tests/test_fmp_client.py
 
 # Run a specific test
 uv run pytest tests/test_server.py::TestMCPServer::test_server_creation
+uv run pytest tests/test_financial_tools.py::TestFinancialTools::test_get_company_profile_tool
 ```
 
 ### Code Quality
@@ -98,7 +104,7 @@ This is a **Model Context Protocol (MCP) server** that integrates with the Finan
 
 ## Environment Configuration
 
-The server expects `FMP_API_KEY` environment variable for Financial Modeling Prep API access (not yet implemented in current codebase).
+The server expects `FMP_API_KEY` environment variable for Financial Modeling Prep API access. This is required for the server to start - it will exit with an error if not provided.
 
 ## Important Implementation Notes
 
@@ -112,8 +118,23 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 - Manual type annotations are added where needed for key functions
 - Import statements use modern Python patterns (no typing.List, use list[T])
 
-**Future Implementation Areas** (based on current TODOs):
-- FMP API client implementation
-- Tool handlers for actual Financial Modeling Prep API calls
-- Enhanced error handling and validation
-- Docker containerization support
+**Current Implementation Status**:
+- ✅ FMP API client implementation (complete with TDD)
+- ✅ Tool handlers for Financial Modeling Prep API calls (3 tools implemented)
+- ✅ Enhanced error handling and validation (comprehensive)
+- ✅ Full test coverage with proper MCP testing patterns
+- 🚧 Docker containerization support (planned)
+- 🚧 Additional financial tools (planned)
+
+**Tool Handler Implementation**:
+- Uses `@server.call_tool()` decorator for proper MCP protocol integration
+- Returns `list[TextContent]` for formatted output
+- Handles errors gracefully with user-friendly messages
+- Integrates with `FMPClient` for actual API calls
+- Tests use `server.request_handlers[CallToolRequest]` for proper MCP testing
+
+**Testing Patterns**:
+- Mock `FMPClient._make_request` at class level for comprehensive testing
+- Use `CallToolRequest` and `CallToolRequestParams` for proper MCP testing
+- Access results via `result.root.content[0].text` for ServerResult objects
+- Test both successful data retrieval and error handling scenarios
