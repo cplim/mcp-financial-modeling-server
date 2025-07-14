@@ -28,13 +28,7 @@ jobs:
       run: uv sync --dev
 
     - name: Run tests
-      run: uv run pytest --cov=src/mcp_financial_modeling_prep --cov-report=xml
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: true
+      run: uv run pytest --cov=src/mcp_financial_modeling_prep --cov-report=xml --cov-report=term --cov-fail-under=80
 
   lint:
     runs-on: ubuntu-latest
