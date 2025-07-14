@@ -16,12 +16,6 @@ class TestFMPClient:
         assert client.api_key == "test_api_key"
         assert client.base_url == "https://financialmodelingprep.com/api/v3"
 
-    def test_client_initialization_without_api_key(self):
-        """Test that the client can be initialized without API key."""
-        client = FMPClient()
-        assert client.api_key is None
-        assert client.base_url == "https://financialmodelingprep.com/api/v3"
-
     def test_client_initialization_with_custom_base_url(self):
         """Test that the client can be initialized with custom base URL."""
         custom_url = "https://custom-api.example.com/v3"
@@ -113,9 +107,9 @@ class TestFMPClient:
             assert "404" in str(exc_info.value)
 
     @pytest.mark.asyncio
-    async def test_make_request_without_api_key(self):
-        """Test API request without API key raises error."""
-        client = FMPClient()
+    async def test_make_request_with_empty_api_key(self):
+        """Test API request with empty API key raises error."""
+        client = FMPClient(api_key="")
 
         with pytest.raises(ValueError) as exc_info:
             await client._make_request("/test")

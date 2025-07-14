@@ -1,6 +1,5 @@
 """Financial Modeling Prep API client implementation."""
 
-import os
 from typing import Any
 
 import httpx
@@ -9,16 +8,15 @@ import httpx
 class FMPClient:
     """Client for interacting with the Financial Modeling Prep API."""
 
-    def __init__(self, api_key: str | None = None, base_url: str | None = None):
+    def __init__(self, api_key: str, base_url: str | None = None):
         """Initialize the FMP client.
 
         Args:
-            api_key: Financial Modeling Prep API key. If not provided, will try to get
-                from environment.
+            api_key: Financial Modeling Prep API key (required).
             base_url: Base URL for the FMP API. Defaults to
                 'https://financialmodelingprep.com/api/v3'.
         """
-        self.api_key = api_key or os.getenv("FMP_API_KEY")
+        self.api_key = api_key
         self.base_url = base_url or "https://financialmodelingprep.com/api/v3"
 
     async def _make_request(self, endpoint: str) -> list[dict[str, Any]]:
