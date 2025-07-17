@@ -135,9 +135,7 @@ class TestFinancialTools:
             # Create a mock request
             request = CallToolRequest(
                 method="tools/call",
-                params=CallToolRequestParams(
-                    name="get_stock_quote", arguments={"symbol": "AAPL"}
-                ),
+                params=CallToolRequestParams(name="get_stock_quote", arguments={"symbol": "AAPL"}),
             )
 
             # Call the handler
@@ -196,9 +194,7 @@ class TestFinancialTools:
         # Create a mock request
         request = CallToolRequest(
             method="tools/call",
-            params=CallToolRequestParams(
-                name="get_company_profile", arguments={"symbol": "AAPL"}
-            ),
+            params=CallToolRequestParams(name="get_company_profile", arguments={"symbol": "AAPL"}),
         )
 
         # Call the handler

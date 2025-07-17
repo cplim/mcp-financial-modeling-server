@@ -72,9 +72,7 @@ class TestFMPClient:
         """Test getting historical stock prices."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = {
                 "symbol": "AAPL",
                 "historical": [
@@ -113,9 +111,7 @@ class TestFMPClient:
         """Test getting market indices data."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = [
                 {
                     "symbol": "^GSPC",
@@ -146,9 +142,7 @@ class TestFMPClient:
         """Test getting trading volume data."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = [
                 {
                     "symbol": "AAPL",
@@ -170,9 +164,7 @@ class TestFMPClient:
         """Test historical prices with empty response."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             # Test empty dict response
             mock_request.return_value = {}
             result = await client.get_historical_prices("INVALID")
@@ -188,9 +180,7 @@ class TestFMPClient:
         """Test historical prices without date parameters."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = {"symbol": "AAPL", "historical": []}
 
             result = await client.get_historical_prices("AAPL")
@@ -203,9 +193,7 @@ class TestFMPClient:
         """Test market indices with empty response."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = []
 
             result = await client.get_market_indices()
@@ -218,9 +206,7 @@ class TestFMPClient:
         """Test trading volume with empty response."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = []
 
             result = await client.get_trading_volume("INVALID")
@@ -233,9 +219,7 @@ class TestFMPClient:
         """Test historical prices with invalid date types."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = {"symbol": "AAPL", "historical": []}
 
             # Test with only from_date
@@ -243,9 +227,7 @@ class TestFMPClient:
             result = await client.get_historical_prices("AAPL", from_date=from_date)
 
             assert result == []
-            mock_request.assert_called_once_with(
-                "/historical-price-full/AAPL?from=2023-01-01"
-            )
+            mock_request.assert_called_once_with("/historical-price-full/AAPL?from=2023-01-01")
 
             # Test with only to_date
             mock_request.reset_mock()
@@ -253,18 +235,14 @@ class TestFMPClient:
             result = await client.get_historical_prices("AAPL", to_date=to_date)
 
             assert result == []
-            mock_request.assert_called_once_with(
-                "/historical-price-full/AAPL?to=2023-12-31"
-            )
+            mock_request.assert_called_once_with("/historical-price-full/AAPL?to=2023-12-31")
 
     @pytest.mark.asyncio
     async def test_get_income_statement(self):
         """Test getting income statement data."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = [{"symbol": "AAPL", "revenue": 1000000}]
 
             result = await client.get_income_statement("AAPL")
@@ -278,12 +256,8 @@ class TestFMPClient:
         """Test getting company profile data."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
-            mock_request.return_value = [
-                {"symbol": "AAPL", "companyName": "Apple Inc."}
-            ]
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = [{"symbol": "AAPL", "companyName": "Apple Inc."}]
 
             result = await client.get_company_profile("AAPL")
 
@@ -296,9 +270,7 @@ class TestFMPClient:
         """Test company profile with empty response."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = []
 
             result = await client.get_company_profile("INVALID")
@@ -311,9 +283,7 @@ class TestFMPClient:
         """Test income statement with empty response."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = []
 
             result = await client.get_income_statement("INVALID")
@@ -326,9 +296,7 @@ class TestFMPClient:
         """Test getting real-time stock quote."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = [{"symbol": "AAPL", "price": 150.00}]
 
             result = await client.get_stock_quote("AAPL")
@@ -342,9 +310,7 @@ class TestFMPClient:
         """Test stock quote with empty response."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = []
 
             result = await client.get_stock_quote("INVALID")
@@ -357,9 +323,7 @@ class TestFMPClient:
         """Test company profile with API error."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = Exception("API request failed with status 404")
 
             with pytest.raises(Exception, match="API request failed"):
@@ -370,9 +334,7 @@ class TestFMPClient:
         """Test income statement with API error."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = Exception("API request failed with status 404")
 
             with pytest.raises(Exception, match="API request failed"):
@@ -383,9 +345,7 @@ class TestFMPClient:
         """Test stock quote with API error."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = Exception("API request failed with status 404")
 
             with pytest.raises(Exception, match="API request failed"):
@@ -396,9 +356,7 @@ class TestFMPClient:
         """Test historical prices with API error."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = Exception("API request failed with status 404")
 
             with pytest.raises(Exception, match="API request failed"):
@@ -409,9 +367,7 @@ class TestFMPClient:
         """Test market indices with API error."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = Exception("API request failed with status 500")
 
             with pytest.raises(Exception, match="API request failed"):
@@ -422,9 +378,7 @@ class TestFMPClient:
         """Test trading volume with API error."""
         client = FMPClient(api_key="test_key")
 
-        with patch.object(
-            client, "_make_request", new_callable=AsyncMock
-        ) as mock_request:
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = Exception("API request failed with status 404")
 
             with pytest.raises(Exception, match="API request failed"):

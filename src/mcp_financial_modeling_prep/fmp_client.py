@@ -46,8 +46,7 @@ class FMPClient:
                 return response.json()
             else:
                 raise Exception(
-                    f"API request failed with status {response.status_code}: "
-                    f"{response.text}"
+                    f"API request failed with status {response.status_code}: " f"{response.text}"
                 )
 
     async def get_company_profile(self, symbol: str) -> dict[str, Any]:
