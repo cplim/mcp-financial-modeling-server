@@ -40,7 +40,7 @@ class ServiceRegistry:
         ]
 
         for service_class in service_classes:
-            service = service_class(self.fmp_client)
+            service = service_class(self.fmp_client)  # type: ignore[abstract]
             self.services[service.name] = service
 
     def get_all_tools(self) -> list[Tool]:
