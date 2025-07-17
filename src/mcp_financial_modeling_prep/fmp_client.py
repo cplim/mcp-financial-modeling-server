@@ -1,5 +1,6 @@
 """Financial Modeling Prep API client implementation."""
 
+from datetime import date
 from typing import Any
 
 import httpx
@@ -82,5 +83,60 @@ class FMPClient:
         Returns:
             Stock quote data
         """
-        data = await self._make_request(f"/quote-short/{symbol}")
+        data = await self._make_request(f"/quote/{symbol}")
+        return data[0] if data else {}
+
+    async def get_historical_prices(
+        self, symbol: str, from_date: date | None = None, to_date: date | None = None
+    ) -> list[dict[str, Any]]:
+        """Get historical stock prices.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+            from_date: Start date (optional)
+            to_date: End date (optional)
+
+        Returns:
+            List of historical price data
+        """
+        endpoint = f"/historical-price-full/{symbol}"
+        params = []
+
+        if from_date:
+            params.append(f"from={from_date.isoformat()}")
+        if to_date:
+            params.append(f"to={to_date.isoformat()}")
+
+        if params:
+            endpoint += "?" + "&".join(params)
+
+        data = await self._make_request(endpoint)
+
+        # FMP historical API returns nested structure with 'historical' key
+        if isinstance(data, dict) and "historical" in data:
+            return data["historical"]
+        elif isinstance(data, list):
+            return data
+        else:
+            return []
+
+    async def get_market_indices(self) -> list[dict[str, Any]]:
+        """Get market indices data.
+
+        Returns:
+            List of market indices data
+        """
+        data = await self._make_request("/quotes/index")
+        return data
+
+    async def get_trading_volume(self, symbol: str) -> dict[str, Any]:
+        """Get trading volume data.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+
+        Returns:
+            Trading volume data
+        """
+        data = await self._make_request(f"/quote/{symbol}")
         return data[0] if data else {}
