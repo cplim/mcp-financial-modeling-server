@@ -69,6 +69,50 @@ def create_server(api_key: str) -> Server:
                     "required": ["symbol"],
                 },
             ),
+            Tool(
+                name="get_historical_prices",
+                description="Get historical stock prices",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "symbol": {
+                            "type": "string",
+                            "description": "Stock symbol (e.g., AAPL)",
+                        },
+                        "from_date": {
+                            "type": "string",
+                            "description": "Start date in YYYY-MM-DD format (optional)",
+                        },
+                        "to_date": {
+                            "type": "string",
+                            "description": "End date in YYYY-MM-DD format (optional)",
+                        },
+                    },
+                    "required": ["symbol"],
+                },
+            ),
+            Tool(
+                name="get_market_indices",
+                description="Get market indices data",
+                inputSchema={
+                    "type": "object",
+                    "properties": {},
+                },
+            ),
+            Tool(
+                name="get_trading_volume",
+                description="Get trading volume data",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "symbol": {
+                            "type": "string",
+                            "description": "Stock symbol (e.g., AAPL)",
+                        }
+                    },
+                    "required": ["symbol"],
+                },
+            ),
         ]
 
     @server.list_resources()
@@ -188,6 +232,116 @@ Current Price: ${price:.2f}
 Change: ${change:.2f} ({change_percent:.2f}%)
 Day Range: ${day_low:.2f} - ${day_high:.2f}
 52-Week Range: ${year_low:.2f} - ${year_high:.2f}"""
+
+                return [TextContent(type="text", text=formatted_text)]
+
+            elif name == "get_historical_prices":
+                symbol = arguments.get("symbol", "")
+                if not symbol:
+                    return [TextContent(type="text", text="Error: Symbol is required")]
+
+                from_date_str = arguments.get("from_date")
+                to_date_str = arguments.get("to_date")
+
+                # Parse date strings if provided
+                from_date = None
+                to_date = None
+
+                if from_date_str:
+                    try:
+                        from datetime import datetime
+
+                        from_date = datetime.strptime(from_date_str, "%Y-%m-%d").date()
+                    except ValueError:
+                        return [
+                            TextContent(
+                                type="text",
+                                text="Error: Invalid from_date format. Use YYYY-MM-DD",
+                            )
+                        ]
+
+                if to_date_str:
+                    try:
+                        from datetime import datetime
+
+                        to_date = datetime.strptime(to_date_str, "%Y-%m-%d").date()
+                    except ValueError:
+                        return [
+                            TextContent(
+                                type="text",
+                                text="Error: Invalid to_date format. Use YYYY-MM-DD",
+                            )
+                        ]
+
+                historical_data = await fmp_client.get_historical_prices(
+                    symbol, from_date, to_date
+                )
+                if not historical_data:
+                    return [
+                        TextContent(
+                            type="text",
+                            text=f"No historical data found for symbol: {symbol}",
+                        )
+                    ]
+
+                # Format the historical prices data
+                formatted_text = f"Historical Prices for {symbol}\n\n"
+                for price in historical_data[:10]:  # Show first 10 entries
+                    formatted_text += f"Date: {price.get('date', 'N/A')}\n"
+                    formatted_text += f"Open: ${price.get('open', 0):.2f}\n"
+                    formatted_text += f"High: ${price.get('high', 0):.2f}\n"
+                    formatted_text += f"Low: ${price.get('low', 0):.2f}\n"
+                    formatted_text += f"Close: ${price.get('close', 0):.2f}\n"
+                    formatted_text += f"Volume: {price.get('volume', 0):,}\n\n"
+
+                if len(historical_data) > 10:
+                    formatted_text += f"... and {len(historical_data) - 10} more entries"
+
+                return [TextContent(type="text", text=formatted_text)]
+
+            elif name == "get_market_indices":
+                indices_data = await fmp_client.get_market_indices()
+                if not indices_data:
+                    return [
+                        TextContent(
+                            type="text", text="No market indices data available"
+                        )
+                    ]
+
+                # Format the market indices data
+                formatted_text = "Market Indices\n\n"
+                for index in indices_data:
+                    formatted_text += (
+                        f"Index: {index.get('name', index.get('symbol', 'N/A'))}\n"
+                    )
+                    formatted_text += f"Symbol: {index.get('symbol', 'N/A')}\n"
+                    formatted_text += f"Price: ${index.get('price', 0):.2f}\n"
+                    change_pct = index.get('changesPercentage', 0)
+                    change_val = index.get('change', 0)
+                    formatted_text += f"Change: ${change_val:.2f} ({change_pct:.2f}%)\n\n"
+
+                return [TextContent(type="text", text=formatted_text)]
+
+            elif name == "get_trading_volume":
+                symbol = arguments.get("symbol", "")
+                if not symbol:
+                    return [TextContent(type="text", text="Error: Symbol is required")]
+
+                result = await fmp_client.get_trading_volume(symbol)
+                if not result:
+                    return [
+                        TextContent(
+                            type="text",
+                            text=f"No trading volume data found for symbol: {symbol}",
+                        )
+                    ]
+
+                # Format the trading volume data
+                formatted_text = f"""Trading Volume for {result.get('symbol', 'N/A')}
+
+Current Volume: {result.get('volume', 0):,}
+Average Volume: {result.get('avgVolume', 0):,}
+Date: {result.get('date', 'N/A')}"""
 
                 return [TextContent(type="text", text=formatted_text)]
 

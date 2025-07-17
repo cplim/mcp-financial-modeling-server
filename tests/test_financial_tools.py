@@ -236,3 +236,156 @@ class TestFinancialTools:
 
             assert result.root.content[0].type == "text"
             assert "No data found" in result.root.content[0].text
+
+    @pytest.mark.asyncio
+    async def test_get_historical_prices_tool(self, server, fmp_client):
+        """Test the get_historical_prices tool handler."""
+        # Mock the underlying HTTP request on the FMPClient class
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
+            mock_request.return_value = {
+                "symbol": "AAPL",
+                "historical": [
+                    {
+                        "date": "2023-12-01",
+                        "open": 189.37,
+                        "high": 190.05,
+                        "low": 187.45,
+                        "close": 189.95,
+                        "volume": 48744900,
+                    },
+                    {
+                        "date": "2023-11-30",
+                        "open": 190.90,
+                        "high": 191.05,
+                        "low": 189.88,
+                        "close": 189.37,
+                        "volume": 43014200,
+                    },
+                ],
+            }
+
+            # Test the FMP client method directly first
+            from datetime import date
+
+            from_date = date(2023, 11, 30)
+            to_date = date(2023, 12, 1)
+            result = await fmp_client.get_historical_prices("AAPL", from_date, to_date)
+            assert len(result) == 2
+            assert result[0]["date"] == "2023-12-01"
+
+            # Now test the tool handler through the MCP server
+            tool_handler = server.request_handlers[CallToolRequest]
+
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_historical_prices",
+                    arguments={
+                        "symbol": "AAPL",
+                        "from_date": "2023-11-30",
+                        "to_date": "2023-12-01",
+                    },
+                ),
+            )
+
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "Historical Prices for AAPL" in result.root.content[0].text
+            assert "2023-12-01" in result.root.content[0].text
+            assert "189.95" in result.root.content[0].text
+
+    @pytest.mark.asyncio
+    async def test_get_market_indices_tool(self, server, fmp_client):
+        """Test the get_market_indices tool handler."""
+        # Mock the underlying HTTP request on the FMPClient class
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
+            mock_request.return_value = [
+                {
+                    "symbol": "^GSPC",
+                    "name": "S&P 500",
+                    "price": 4567.80,
+                    "change": 12.34,
+                    "changesPercentage": 0.27,
+                },
+                {
+                    "symbol": "^DJI",
+                    "name": "Dow Jones",
+                    "price": 35678.90,
+                    "change": -45.67,
+                    "changesPercentage": -0.13,
+                },
+            ]
+
+            # Test the FMP client method directly first
+            result = await fmp_client.get_market_indices()
+            assert len(result) == 2
+            assert result[0]["symbol"] == "^GSPC"
+            assert result[0]["name"] == "S&P 500"
+
+            # Now test the tool handler through the MCP server
+            tool_handler = server.request_handlers[CallToolRequest]
+
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_market_indices",
+                    arguments={},
+                ),
+            )
+
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "Market Indices" in result.root.content[0].text
+            assert "S&P 500" in result.root.content[0].text
+            assert "4567.80" in result.root.content[0].text
+
+    @pytest.mark.asyncio
+    async def test_get_trading_volume_tool(self, server, fmp_client):
+        """Test the get_trading_volume tool handler."""
+        # Mock the underlying HTTP request on the FMPClient class
+        with patch(
+            "mcp_financial_modeling_prep.fmp_client.FMPClient._make_request"
+        ) as mock_request:
+            mock_request.return_value = [
+                {
+                    "symbol": "AAPL",
+                    "volume": 48744900,
+                    "avgVolume": 45000000,
+                    "date": "2023-12-01",
+                }
+            ]
+
+            # Test the FMP client method directly first
+            result = await fmp_client.get_trading_volume("AAPL")
+            assert result["symbol"] == "AAPL"
+            assert result["volume"] == 48744900
+
+            # Now test the tool handler through the MCP server
+            tool_handler = server.request_handlers[CallToolRequest]
+
+            # Create a mock request
+            request = CallToolRequest(
+                method="tools/call",
+                params=CallToolRequestParams(
+                    name="get_trading_volume",
+                    arguments={"symbol": "AAPL"},
+                ),
+            )
+
+            # Call the handler
+            result = await tool_handler(request)
+
+            assert result.root.content[0].type == "text"
+            assert "Trading Volume for AAPL" in result.root.content[0].text
+            assert "48,744,900" in result.root.content[0].text
+            assert "45,000,000" in result.root.content[0].text
