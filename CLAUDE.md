@@ -23,10 +23,12 @@ uv run pytest --cov=src/mcp_financial_modeling_prep --cov-report=term
 uv run pytest tests/test_server.py
 uv run pytest tests/test_financial_tools.py
 uv run pytest tests/test_fmp_client.py
+uv run pytest tests/test_services.py
 
 # Run a specific test
 uv run pytest tests/test_server.py::TestMCPServer::test_server_creation
 uv run pytest tests/test_financial_tools.py::TestFinancialTools::test_get_company_profile_tool
+uv run pytest tests/test_services.py::TestCompanyProfileService::test_execute_success
 ```
 
 ### Code Quality
@@ -59,13 +61,15 @@ This is a **Model Context Protocol (MCP) server** that integrates with the Finan
 
 **MCP Server Structure** (`src/mcp_financial_modeling_prep/server.py`):
 - `create_server()`: Factory function that creates and configures the MCP server instance
-- **Tools**: Three financial tools are defined (`get_company_profile`, `get_income_statement`, `get_stock_quote`) with JSON schemas for input validation
+- **Tools**: Six financial tools are defined with JSON schemas for input validation
 - **Resources**: Provides financial analysis templates via custom URI scheme (`financial://`)
 - **Prompts**: Defines structured prompts for financial analysis with typed arguments
 - `main()`: Async entry point that runs the server using stdio communication
+- **Service Architecture**: Uses ServiceRegistry for tool discovery and dispatch
 
 **Project Structure**:
 - **src layout**: Source code in `src/mcp_financial_modeling_prep/` for proper packaging
+- **Service Architecture**: Financial tools organized into service classes in `src/mcp_financial_modeling_prep/services/`
 - **Test-Driven Development**: Tests in `tests/` directory with pytest configuration
 - **Type Safety**: Uses modern Python typing with mypy (relaxed mode for MCP compatibility)
 
@@ -120,21 +124,25 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 
 **Current Implementation Status**:
 - ✅ FMP API client implementation (complete with TDD)
-- ✅ Tool handlers for Financial Modeling Prep API calls (3 tools implemented)
+- ✅ Tool handlers for Financial Modeling Prep API calls (6 tools implemented)
+- ✅ Service abstraction pattern for maintainable architecture
 - ✅ Enhanced error handling and validation (comprehensive)
-- ✅ Full test coverage with proper MCP testing patterns
+- ✅ Full test coverage with proper MCP testing patterns (49 tests)
+- ✅ Market data tools (historical prices, indices, trading volume)
 - 🚧 Docker containerization support (planned)
-- 🚧 Additional financial tools (planned)
+- 🚧 Additional financial analysis tools (planned)
 
-**Tool Handler Implementation**:
-- Uses `@server.call_tool()` decorator for proper MCP protocol integration
-- Returns `list[TextContent]` for formatted output
-- Handles errors gracefully with user-friendly messages
-- Integrates with `FMPClient` for actual API calls
-- Tests use `server.request_handlers[CallToolRequest]` for proper MCP testing
+**Service Architecture Implementation**:
+- **BaseFinancialService**: Abstract base class defining service interface
+- **Individual Services**: CompanyProfileService, IncomeStatementService, StockQuoteService, HistoricalPricesService, MarketIndicesService, TradingVolumeService
+- **ServiceRegistry**: Manages service discovery and tool execution
+- **Clean Separation**: Each service handles its own validation, formatting, and error handling
+- **Extensibility**: New tools can be added by creating new service classes
 
 **Testing Patterns**:
 - Mock `FMPClient._make_request` at class level for comprehensive testing
 - Use `CallToolRequest` and `CallToolRequestParams` for proper MCP testing
 - Access results via `result.root.content[0].text` for ServerResult objects
 - Test both successful data retrieval and error handling scenarios
+- Service abstraction tests verify proper inheritance and interface compliance
+- Integration tests ensure services work correctly through the registry

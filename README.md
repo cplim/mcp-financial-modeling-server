@@ -8,11 +8,14 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 - **Company Profile Data**: Get detailed company information including industry, website, and description
 - **Income Statement**: Retrieve company financial statements with revenue, profit, and operating metrics
 - **Real-time Stock Quotes**: Get current stock prices, changes, and daily/yearly ranges
+- **Historical Stock Prices**: Get historical price data with optional date range filtering
+- **Market Indices**: Get market indices data (S&P 500, NASDAQ, DOW) with current prices and changes
+- **Trading Volume**: Get trading volume data including current and average volume
+- **Service Architecture**: Clean, maintainable service abstraction pattern for easy extensibility
 - **Error Handling**: Comprehensive error handling for API failures and invalid inputs
 - **Data Validation**: Input validation and formatted output for all financial data
 
 ### 🚧 Planned Features
-- **Market Data**: Historical prices, market indices
 - **Financial Analysis**: DCF valuation, financial ratios, analyst estimates
 - **ESG Data**: Environmental, social, and governance ratings
 - **Insider Trading**: Track insider transactions
@@ -56,6 +59,18 @@ python -m mcp_financial_modeling_prep.server
 3. **get_stock_quote**: Get real-time stock quotes
    - Input: `{"symbol": "AAPL"}`
    - Returns: Formatted stock quote with price, changes, and trading ranges
+
+4. **get_historical_prices**: Get historical stock price data
+   - Input: `{"symbol": "AAPL", "from_date": "2023-01-01", "to_date": "2023-12-31"}`
+   - Returns: Formatted historical prices with open, high, low, close, and volume data
+
+5. **get_market_indices**: Get market indices information
+   - Input: `{}` (no parameters required)
+   - Returns: Formatted market indices data with current prices and changes
+
+6. **get_trading_volume**: Get trading volume data
+   - Input: `{"symbol": "AAPL"}`
+   - Returns: Formatted trading volume with current and average volume
 
 ## Development
 
@@ -106,7 +121,9 @@ uv run black .
 - [x] TDD framework with comprehensive tests
 - [x] MCP server basic structure
 - [x] FMP API client implementation
-- [x] Financial data tools (company profile, income statement, stock quotes)
+- [x] Financial data tools (6 tools implemented)
+- [x] Market data tools (historical prices, indices, trading volume)
+- [x] Service abstraction pattern for maintainable architecture
 - [x] Error handling and data validation
 - [x] Code quality checks (black, ruff, mypy)
 
@@ -114,16 +131,16 @@ uv run black .
 - [ ] Re-enable 80% code coverage requirement in CI
 
 ### 📋 Planned
-- [ ] Additional market data tools
 - [ ] Financial analysis tools
 - [ ] Resources and prompts for financial analysis
 - [ ] Docker containerization
 - [ ] Comprehensive documentation
 
 ### 🧪 Test Coverage
-- **Total Tests**: 17 (all passing)
-- **Test Files**: 3 (server, FMP client, financial tools)
+- **Total Tests**: 49 (all passing)
+- **Test Files**: 4 (server, FMP client, financial tools, services)
 - **Coverage**: Comprehensive mocking and integration testing
+- **Architecture**: Service abstraction pattern with individual service tests
 
 ## License
 
