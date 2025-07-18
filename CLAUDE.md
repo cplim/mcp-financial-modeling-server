@@ -127,9 +127,10 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 - ✅ Tool handlers for Financial Modeling Prep API calls (9 tools implemented)
 - ✅ Service abstraction pattern for maintainable architecture
 - ✅ Enhanced error handling and validation (comprehensive)
-- ✅ Full test coverage with proper MCP testing patterns (73 tests)
+- ✅ Full test coverage with proper MCP testing patterns (76 tests)
 - ✅ Market data tools (historical prices, indices, trading volume)
 - ✅ Financial analysis tools (ratios, DCF valuation, technical indicators)
+- ✅ MCP resources and prompts for financial analysis workflows
 - 🚧 Docker containerization support (planned)
 - 🚧 Advanced financial analysis tools (planned)
 
@@ -147,3 +148,7 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 - Test both successful data retrieval and error handling scenarios
 - Service abstraction tests verify proper inheritance and interface compliance
 - Integration tests ensure services work correctly through the registry
+
+## Development Best Practices
+
+- Always update documentation before committing and pushing code

@@ -41,9 +41,21 @@ def create_server(api_key: str) -> Server:
             Resource(
                 uri=AnyUrl("financial://templates/analysis"),
                 name="Financial Analysis Templates",
-                description="Templates for financial analysis",
+                description="Templates for comprehensive financial analysis and reporting",
                 mimeType="text/plain",
-            )
+            ),
+            Resource(
+                uri=AnyUrl("financial://templates/report"),
+                name="Financial Report Templates",
+                description="Templates for generating financial reports and summaries",
+                mimeType="text/plain",
+            ),
+            Resource(
+                uri=AnyUrl("financial://templates/company"),
+                name="Company Analysis Templates",
+                description="Templates for company profile and performance analysis",
+                mimeType="text/plain",
+            ),
         ]
 
     @server.list_prompts()
@@ -54,7 +66,7 @@ def create_server(api_key: str) -> Server:
         return [
             Prompt(
                 name="analyze_company",
-                description="Analyze a company's financial performance",
+                description="Analyze a company's financial performance comprehensively",
                 arguments=[
                     PromptArgument(
                         name="symbol",
@@ -62,7 +74,39 @@ def create_server(api_key: str) -> Server:
                         required=True,
                     )
                 ],
-            )
+            ),
+            Prompt(
+                name="technical_analysis",
+                description="Perform technical analysis with indicators and trends",
+                arguments=[
+                    PromptArgument(
+                        name="symbol",
+                        description="Stock symbol to analyze",
+                        required=True,
+                    ),
+                    PromptArgument(
+                        name="period",
+                        description="Time period for analysis (e.g., 20, 50, 200 days)",
+                        required=True,
+                    ),
+                ],
+            ),
+            Prompt(
+                name="financial_health",
+                description="Assess company's financial health using ratios and metrics",
+                arguments=[
+                    PromptArgument(
+                        name="symbol",
+                        description="Stock symbol to analyze",
+                        required=True,
+                    ),
+                    PromptArgument(
+                        name="benchmark",
+                        description="Benchmark symbol for comparison (optional)",
+                        required=False,
+                    ),
+                ],
+            ),
         ]
 
     @server.call_tool()

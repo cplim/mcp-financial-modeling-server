@@ -23,6 +23,16 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 - **Insider Trading**: Track insider transactions
 - **Advanced Analysis**: Analyst estimates and earnings forecasts
 
+### 📋 MCP Resources & Prompts
+- **Resources**: 3 financial analysis templates
+  - `financial://templates/analysis`: Comprehensive financial analysis templates
+  - `financial://templates/report`: Financial report generation templates
+  - `financial://templates/company`: Company analysis templates
+- **Prompts**: 3 structured financial analysis workflows
+  - `analyze_company`: Complete company financial performance analysis
+  - `technical_analysis`: Technical analysis with indicators and trends
+  - `financial_health`: Financial health assessment with ratios and metrics
+
 ## Installation
 
 ```bash
@@ -147,17 +157,16 @@ uv run black .
 - [ ] Re-enable 80% code coverage requirement in CI
 
 ### 📋 Planned
-- [ ] Financial analysis tools
-- [ ] Resources and prompts for financial analysis
 - [ ] Docker containerization
 - [ ] Comprehensive documentation
 
 ### 🧪 Test Coverage
-- **Total Tests**: 73 (all passing)
+- **Total Tests**: 76 (all passing)
 - **Test Files**: 4 (server, FMP client, financial tools, services)
-- **Coverage**: Comprehensive mocking and integration testing
+- **Coverage**: Comprehensive mocking and integration testing including resources and prompts
 - **Architecture**: Service abstraction pattern with individual service tests
 - **Analysis Tools**: Complete TDD implementation for financial analysis services
+- **Resources & Prompts**: Full test coverage for MCP resources and prompts functionality
 
 ## License
 
