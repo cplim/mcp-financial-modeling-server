@@ -96,8 +96,11 @@ python -m mcp_financial_modeling_prep.server
    - Returns: Formatted DCF valuation with fair value and upside/downside analysis
 
 9. **get_technical_indicators**: Get technical analysis indicators
-   - Input: `{"symbol": "AAPL", "indicator_type": "sma", "period": 20}`
+   - Input: `{"symbol": "AAPL", "indicator_type": "sma", "period": 20, "timeframe": "1day"}`
    - Returns: Formatted technical indicators with historical data and analysis
+   - Supports multiple timeframes: 1min, 5min, 15min, 30min, 1hour, 4hour, 1day
+   - Supports multiple indicators: sma, ema, wma, dema, tema, williams, rsi, adx, standarddeviation
+   - Optional date range filtering with from_date and to_date parameters
 
 ## Development
 
@@ -163,13 +166,14 @@ uv run black .
 - [ ] Comprehensive documentation
 
 ### 🧪 Test Coverage
-- **Total Tests**: 86 (all passing)
+- **Total Tests**: 90 (all passing)
 - **Test Files**: 5 (server, FMP client, financial tools, services, config loader)
 - **Coverage**: Comprehensive mocking and integration testing including resources and prompts
 - **Architecture**: Service abstraction pattern with individual service tests
 - **Analysis Tools**: Complete TDD implementation for financial analysis services
 - **Resources & Prompts**: Full test coverage for MCP resources and prompts functionality
 - **Configuration**: Test coverage for configuration-based resource and prompt loading
+- **Technical Indicators**: Enhanced API with enums, timeframes, and date range support
 
 ## License
 

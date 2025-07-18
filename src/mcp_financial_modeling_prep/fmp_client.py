@@ -1,9 +1,36 @@
 """Financial Modeling Prep API client implementation."""
 
 from datetime import date
+from enum import Enum
 from typing import Any
 
 import httpx
+
+
+class TimeFrame(Enum):
+    """Time frame options for technical indicators."""
+
+    MIN_1 = "1min"
+    MIN_5 = "5min"
+    MIN_15 = "15min"
+    MIN_30 = "30min"
+    HOUR_1 = "1hour"
+    HOUR_4 = "4hour"
+    DAY_1 = "1day"
+
+
+class IndicatorType(Enum):
+    """Technical indicator types."""
+
+    SMA = "sma"  # Simple Moving Average
+    EMA = "ema"  # Exponential Moving Average
+    WMA = "wma"  # Weighted Moving Average
+    DEMA = "dema"  # Double Exponential Moving Average
+    TEMA = "tema"  # Triple Exponential Moving Average
+    WILLIAMS = "williams"  # Williams %R
+    RSI = "rsi"  # Relative Strength Index
+    ADX = "adx"  # Average Directional Index
+    STANDARDDEVIATION = "standarddeviation"  # Standard Deviation
 
 
 class FMPClient:
@@ -165,20 +192,49 @@ class FMPClient:
         return data[0] if data else {}
 
     async def get_technical_indicators(
-        self, symbol: str, indicator_type: str, period: int
+        self,
+        symbol: str,
+        indicator_type: IndicatorType | str | None = None,
+        period: int | None = None,
+        timeframe: TimeFrame | str | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
     ) -> list[dict[str, Any]]:
         """Get technical indicators for a stock.
 
         Args:
             symbol: Stock symbol (e.g., 'AAPL')
-            indicator_type: Type of technical indicator (e.g., 'sma', 'ema', 'rsi')
-            period: Period for the indicator calculation
+            indicator_type: Type of technical indicator (defaults to SMA)
+            period: Period for the indicator calculation (defaults to 20)
+            timeframe: Time frame for the data (defaults to 1day)
+            from_date: Start date (optional)
+            to_date: End date (optional)
 
         Returns:
             List of technical indicator data
         """
-        endpoint = f"/technical_indicator/daily/{symbol}"
+        # Set defaults
+        if indicator_type is None:
+            indicator_type = IndicatorType.SMA
+        if period is None:
+            period = 20
+        if timeframe is None:
+            timeframe = TimeFrame.DAY_1
+
+        # Convert enums to strings if needed
+        if isinstance(indicator_type, IndicatorType):
+            indicator_type = indicator_type.value
+        if isinstance(timeframe, TimeFrame):
+            timeframe = timeframe.value
+
+        endpoint = f"/technical_indicator/{timeframe}/{symbol}"
         params = [f"period={period}", f"type={indicator_type}"]
+
+        if from_date:
+            params.append(f"from={from_date.isoformat()}")
+        if to_date:
+            params.append(f"to={to_date.isoformat()}")
+
         endpoint += "?" + "&".join(params)
 
         data = await self._make_request(endpoint)

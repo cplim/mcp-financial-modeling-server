@@ -382,7 +382,10 @@ class TestTechnicalIndicatorsService:
         assert "symbol" in service.input_schema["properties"]
         assert "indicator_type" in service.input_schema["properties"]
         assert "period" in service.input_schema["properties"]
-        assert service.input_schema["required"] == ["symbol", "indicator_type", "period"]
+        assert "timeframe" in service.input_schema["properties"]
+        assert "from_date" in service.input_schema["properties"]
+        assert "to_date" in service.input_schema["properties"]
+        assert service.input_schema["required"] == ["symbol"]
 
     def test_get_tool_definition(self, service):
         """Test get_tool_definition method."""
@@ -415,13 +418,13 @@ class TestTechnicalIndicatorsService:
             assert isinstance(result[0], TextContent)
             assert result[0].type == "text"
             assert "Technical Indicators for AAPL" in result[0].text
-            assert "SMA (10-day)" in result[0].text
+            assert "SMA (10-period)" in result[0].text
             assert "$191.25" in result[0].text
 
     @pytest.mark.asyncio
     async def test_execute_missing_symbol(self, service):
         """Test execution with missing symbol."""
-        result = await service.execute({"indicator_type": "sma", "period": 10})
+        result = await service.execute({})
 
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
@@ -434,9 +437,7 @@ class TestTechnicalIndicatorsService:
         with patch.object(fmp_client, "_make_request") as mock_request:
             mock_request.return_value = []
 
-            result = await service.execute(
-                {"symbol": "INVALID", "indicator_type": "sma", "period": 10}
-            )
+            result = await service.execute({"symbol": "INVALID"})
 
             assert len(result) == 1
             assert isinstance(result[0], TextContent)

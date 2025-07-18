@@ -466,6 +466,8 @@ class TestFMPClient:
     @pytest.mark.asyncio
     async def test_get_technical_indicators(self):
         """Test get_technical_indicators method."""
+        from mcp_financial_modeling_prep.fmp_client import IndicatorType
+
         client = FMPClient(api_key="test_key")
         mock_response = [
             {
@@ -481,10 +483,13 @@ class TestFMPClient:
 
         with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = mock_response
-            result = await client.get_technical_indicators("AAPL", "sma", 10)
+            result = await client.get_technical_indicators("AAPL", IndicatorType.SMA, 10)
 
             assert result == mock_response
             assert result[0]["sma"] == 191.25
+            mock_request.assert_called_once_with(
+                "/technical_indicator/1day/AAPL?period=10&type=sma"
+            )
 
     @pytest.mark.asyncio
     async def test_get_technical_indicators_empty_response(self):
@@ -493,7 +498,7 @@ class TestFMPClient:
 
         with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = []
-            result = await client.get_technical_indicators("INVALID", "sma", 10)
+            result = await client.get_technical_indicators("INVALID")
             assert result == []
 
     @pytest.mark.asyncio
@@ -527,4 +532,70 @@ class TestFMPClient:
             mock_request.side_effect = Exception("API request failed with status 500")
 
             with pytest.raises(Exception, match="API request failed"):
-                await client.get_technical_indicators("AAPL", "sma", 10)
+                await client.get_technical_indicators("AAPL")
+
+    @pytest.mark.asyncio
+    async def test_get_technical_indicators_with_defaults(self):
+        """Test get_technical_indicators with default parameters."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = []
+            result = await client.get_technical_indicators("AAPL")
+
+            assert result == []
+            mock_request.assert_called_once_with(
+                "/technical_indicator/1day/AAPL?period=20&type=sma"
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_technical_indicators_with_enums(self):
+        """Test get_technical_indicators with enum parameters."""
+        from mcp_financial_modeling_prep.fmp_client import IndicatorType, TimeFrame
+
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = []
+            result = await client.get_technical_indicators(
+                "AAPL", IndicatorType.RSI, 14, TimeFrame.HOUR_1
+            )
+
+            assert result == []
+            mock_request.assert_called_once_with(
+                "/technical_indicator/1hour/AAPL?period=14&type=rsi"
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_technical_indicators_with_strings(self):
+        """Test get_technical_indicators with string parameters."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = []
+            result = await client.get_technical_indicators("AAPL", "ema", 50, "5min")
+
+            assert result == []
+            mock_request.assert_called_once_with(
+                "/technical_indicator/5min/AAPL?period=50&type=ema"
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_technical_indicators_with_dates(self):
+        """Test get_technical_indicators with date parameters."""
+        from datetime import date
+
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = []
+            from_date = date(2023, 1, 1)
+            to_date = date(2023, 12, 31)
+            result = await client.get_technical_indicators(
+                "AAPL", from_date=from_date, to_date=to_date
+            )
+
+            assert result == []
+            mock_request.assert_called_once_with(
+                "/technical_indicator/1day/AAPL?period=20&type=sma&from=2023-01-01&to=2023-12-31"
+            )
