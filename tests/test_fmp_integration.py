@@ -260,3 +260,66 @@ class TestFMPClientIntegration:
         # Should return empty list for invalid symbol
         assert isinstance(result, list)
         # Note: FMP API might return empty list or raise error - both are valid
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_get_balance_sheet_integration(self, client, test_symbol):
+        """Test get_balance_sheet with real API call."""
+        result = await client.get_balance_sheet(test_symbol)
+
+        # Verify response structure
+        assert isinstance(result, dict)
+        assert result.get("symbol") == test_symbol
+        assert "totalAssets" in result
+        assert "totalLiabilities" in result
+        assert "totalStockholdersEquity" in result
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_get_cash_flow_integration(self, client, test_symbol):
+        """Test get_cash_flow with real API call."""
+        result = await client.get_cash_flow(test_symbol)
+
+        # Verify response structure
+        assert isinstance(result, dict)
+        assert result.get("symbol") == test_symbol
+        assert "operatingCashFlow" in result
+        assert "freeCashFlow" in result
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_get_key_metrics_integration(self, client, test_symbol):
+        """Test get_key_metrics with real API call."""
+        result = await client.get_key_metrics(test_symbol)
+
+        # Verify response structure
+        assert isinstance(result, dict)
+        assert result.get("symbol") == test_symbol
+        assert "marketCap" in result
+        assert "enterpriseValue" in result
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_get_enterprise_values_integration(self, client, test_symbol):
+        """Test get_enterprise_values with real API call."""
+        result = await client.get_enterprise_values(test_symbol)
+
+        # Verify response structure
+        assert isinstance(result, dict)
+        assert result.get("symbol") == test_symbol
+        assert "enterpriseValue" in result
+
+    @pytest.mark.integration
+    @pytest.mark.asyncio
+    async def test_get_sector_performance_integration(self, client):
+        """Test get_sector_performance with real API call."""
+        result = await client.get_sector_performance()
+
+        # Verify response structure
+        assert isinstance(result, list)
+        assert len(result) > 0  # Should have sector data
+
+        # Check first sector entry
+        first_sector = result[0]
+        assert "sector" in first_sector
+        assert "changesPercentage" in first_sector

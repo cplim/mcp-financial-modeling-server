@@ -173,3 +173,8 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 
 - From now onwards create a new branch in git before making any code changes
 - Once code has been committed, pushed and passes in CI, merge it back to main
+- All branches should begin with 'feature/' prefix
+
+## API Documentation
+
+- Remember that the API documentation is located here: https://site.financialmodelingprep.com/developer/docs

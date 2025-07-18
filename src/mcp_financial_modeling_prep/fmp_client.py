@@ -239,3 +239,60 @@ class FMPClient:
 
         data = await self._make_request(endpoint)
         return data if isinstance(data, list) else []
+
+    async def get_balance_sheet(self, symbol: str) -> dict[str, Any]:
+        """Get company balance sheet statement.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+
+        Returns:
+            Balance sheet data
+        """
+        data = await self._make_request(f"/balance-sheet-statement/{symbol}")
+        return data[0] if data else {}
+
+    async def get_cash_flow(self, symbol: str) -> dict[str, Any]:
+        """Get company cash flow statement.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+
+        Returns:
+            Cash flow statement data
+        """
+        data = await self._make_request(f"/cash-flow-statement/{symbol}")
+        return data[0] if data else {}
+
+    async def get_key_metrics(self, symbol: str) -> dict[str, Any]:
+        """Get key financial metrics for a company.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+
+        Returns:
+            Key metrics data
+        """
+        data = await self._make_request(f"/key-metrics/{symbol}")
+        return data[0] if data else {}
+
+    async def get_enterprise_values(self, symbol: str) -> dict[str, Any]:
+        """Get enterprise value metrics for a company.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+
+        Returns:
+            Enterprise value data
+        """
+        data = await self._make_request(f"/enterprise-values/{symbol}")
+        return data[0] if data else {}
+
+    async def get_sector_performance(self) -> list[dict[str, Any]]:
+        """Get sector performance data.
+
+        Returns:
+            List of sector performance data
+        """
+        data = await self._make_request("/sectors-performance")
+        return data if isinstance(data, list) else []
