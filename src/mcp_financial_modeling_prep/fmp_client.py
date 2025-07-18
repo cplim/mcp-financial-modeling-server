@@ -139,3 +139,47 @@ class FMPClient:
         """
         data = await self._make_request(f"/quote/{symbol}")
         return data[0] if data else {}
+
+    async def get_financial_ratios(self, symbol: str) -> dict[str, Any]:
+        """Get financial ratios for a company.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+
+        Returns:
+            Financial ratios data
+        """
+        data = await self._make_request(f"/ratios/{symbol}")
+        return data[0] if data else {}
+
+    async def get_dcf_valuation(self, symbol: str) -> dict[str, Any]:
+        """Get DCF valuation for a company.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+
+        Returns:
+            DCF valuation data
+        """
+        data = await self._make_request(f"/discounted-cash-flow/{symbol}")
+        return data[0] if data else {}
+
+    async def get_technical_indicators(
+        self, symbol: str, indicator_type: str, period: int
+    ) -> list[dict[str, Any]]:
+        """Get technical indicators for a stock.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+            indicator_type: Type of technical indicator (e.g., 'sma', 'ema', 'rsi')
+            period: Period for the indicator calculation
+
+        Returns:
+            List of technical indicator data
+        """
+        endpoint = f"/technical_indicator/daily/{symbol}"
+        params = [f"period={period}", f"type={indicator_type}"]
+        endpoint += "?" + "&".join(params)
+
+        data = await self._make_request(endpoint)
+        return data if isinstance(data, list) else []

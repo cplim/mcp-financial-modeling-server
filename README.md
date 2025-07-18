@@ -11,14 +11,17 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 - **Historical Stock Prices**: Get historical price data with optional date range filtering
 - **Market Indices**: Get market indices data (S&P 500, NASDAQ, DOW) with current prices and changes
 - **Trading Volume**: Get trading volume data including current and average volume
+- **Financial Ratios**: Comprehensive ratio analysis including liquidity, profitability, and leverage ratios
+- **DCF Valuation**: Discounted cash flow valuation with upside/downside analysis
+- **Technical Indicators**: Technical analysis tools including SMA, EMA, RSI, MACD, and more
 - **Service Architecture**: Clean, maintainable service abstraction pattern for easy extensibility
 - **Error Handling**: Comprehensive error handling for API failures and invalid inputs
 - **Data Validation**: Input validation and formatted output for all financial data
 
 ### 🚧 Planned Features
-- **Financial Analysis**: DCF valuation, financial ratios, analyst estimates
 - **ESG Data**: Environmental, social, and governance ratings
 - **Insider Trading**: Track insider transactions
+- **Advanced Analysis**: Analyst estimates and earnings forecasts
 
 ## Installation
 
@@ -72,6 +75,18 @@ python -m mcp_financial_modeling_prep.server
    - Input: `{"symbol": "AAPL"}`
    - Returns: Formatted trading volume with current and average volume
 
+7. **get_financial_ratios**: Get comprehensive financial ratios analysis
+   - Input: `{"symbol": "AAPL"}`
+   - Returns: Formatted financial ratios including liquidity, profitability, and leverage ratios
+
+8. **get_dcf_valuation**: Get DCF valuation analysis
+   - Input: `{"symbol": "AAPL"}`
+   - Returns: Formatted DCF valuation with fair value and upside/downside analysis
+
+9. **get_technical_indicators**: Get technical analysis indicators
+   - Input: `{"symbol": "AAPL", "indicator_type": "sma", "period": 20}`
+   - Returns: Formatted technical indicators with historical data and analysis
+
 ## Development
 
 This project uses Test-Driven Development (TDD) principles.
@@ -123,6 +138,7 @@ uv run black .
 - [x] FMP API client implementation
 - [x] Financial data tools (6 tools implemented)
 - [x] Market data tools (historical prices, indices, trading volume)
+- [x] Financial analysis tools (ratios, DCF valuation, technical indicators)
 - [x] Service abstraction pattern for maintainable architecture
 - [x] Error handling and data validation
 - [x] Code quality checks (black, ruff, mypy)
@@ -137,10 +153,11 @@ uv run black .
 - [ ] Comprehensive documentation
 
 ### 🧪 Test Coverage
-- **Total Tests**: 49 (all passing)
+- **Total Tests**: 73 (all passing)
 - **Test Files**: 4 (server, FMP client, financial tools, services)
 - **Coverage**: Comprehensive mocking and integration testing
 - **Architecture**: Service abstraction pattern with individual service tests
+- **Analysis Tools**: Complete TDD implementation for financial analysis services
 
 ## License
 

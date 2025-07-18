@@ -383,3 +383,148 @@ class TestFMPClient:
 
             with pytest.raises(Exception, match="API request failed"):
                 await client.get_trading_volume("INVALID")
+
+    # Financial Analysis Tools Tests
+    @pytest.mark.asyncio
+    async def test_get_financial_ratios(self):
+        """Test get_financial_ratios method."""
+        client = FMPClient(api_key="test_key")
+        mock_response = [
+            {
+                "symbol": "AAPL",
+                "date": "2023-12-31",
+                "currentRatio": 1.029,
+                "quickRatio": 0.985,
+                "cashRatio": 0.298,
+                "daysOfSalesOutstanding": 62.443,
+                "daysOfInventoryOutstanding": 10.636,
+                "operatingCycle": 73.079,
+                "daysOfPayablesOutstanding": 106.040,
+                "cashConversionCycle": -32.961,
+                "grossProfitMargin": 0.441,
+                "operatingProfitMargin": 0.298,
+                "pretaxProfitMargin": 0.299,
+                "netProfitMargin": 0.253,
+                "effectiveTaxRate": 0.152,
+                "returnOnAssets": 0.223,
+                "returnOnEquity": 1.474,
+                "returnOnCapitalEmployed": 0.299,
+                "netIncomePerEBT": 0.848,
+                "ebtPerEbit": 1.001,
+                "ebitPerRevenue": 0.298,
+                "debtRatio": 0.318,
+                "debtEquityRatio": 1.969,
+                "longTermDebtToCapitalization": 0.663,
+                "totalDebtToCapitalization": 0.663,
+            }
+        ]
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = mock_response
+            result = await client.get_financial_ratios("AAPL")
+
+            assert result == mock_response[0]
+            assert result["symbol"] == "AAPL"
+            assert result["returnOnEquity"] == 1.474
+
+    @pytest.mark.asyncio
+    async def test_get_financial_ratios_empty_response(self):
+        """Test get_financial_ratios with empty response."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = []
+            result = await client.get_financial_ratios("INVALID")
+            assert result == {}
+
+    @pytest.mark.asyncio
+    async def test_get_dcf_valuation(self):
+        """Test get_dcf_valuation method."""
+        client = FMPClient(api_key="test_key")
+        mock_response = [
+            {"symbol": "AAPL", "date": "2023-12-31", "dcf": 181.50, "Stock Price": 193.60}
+        ]
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = mock_response
+            result = await client.get_dcf_valuation("AAPL")
+
+            assert result == mock_response[0]
+            assert result["symbol"] == "AAPL"
+            assert result["dcf"] == 181.50
+
+    @pytest.mark.asyncio
+    async def test_get_dcf_valuation_empty_response(self):
+        """Test get_dcf_valuation with empty response."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = []
+            result = await client.get_dcf_valuation("INVALID")
+            assert result == {}
+
+    @pytest.mark.asyncio
+    async def test_get_technical_indicators(self):
+        """Test get_technical_indicators method."""
+        client = FMPClient(api_key="test_key")
+        mock_response = [
+            {
+                "date": "2023-12-29",
+                "open": 193.11,
+                "high": 194.66,
+                "low": 193.11,
+                "close": 193.58,
+                "volume": 42628802,
+                "sma": 191.25,
+            }
+        ]
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = mock_response
+            result = await client.get_technical_indicators("AAPL", "sma", 10)
+
+            assert result == mock_response
+            assert result[0]["sma"] == 191.25
+
+    @pytest.mark.asyncio
+    async def test_get_technical_indicators_empty_response(self):
+        """Test get_technical_indicators with empty response."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = []
+            result = await client.get_technical_indicators("INVALID", "sma", 10)
+            assert result == []
+
+    @pytest.mark.asyncio
+    async def test_get_financial_ratios_api_error(self):
+        """Test get_financial_ratios with API error."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.side_effect = Exception("API request failed with status 500")
+
+            with pytest.raises(Exception, match="API request failed"):
+                await client.get_financial_ratios("AAPL")
+
+    @pytest.mark.asyncio
+    async def test_get_dcf_valuation_api_error(self):
+        """Test get_dcf_valuation with API error."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.side_effect = Exception("API request failed with status 500")
+
+            with pytest.raises(Exception, match="API request failed"):
+                await client.get_dcf_valuation("AAPL")
+
+    @pytest.mark.asyncio
+    async def test_get_technical_indicators_api_error(self):
+        """Test get_technical_indicators with API error."""
+        client = FMPClient(api_key="test_key")
+
+        with patch.object(client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.side_effect = Exception("API request failed with status 500")
+
+            with pytest.raises(Exception, match="API request failed"):
+                await client.get_technical_indicators("AAPL", "sma", 10)

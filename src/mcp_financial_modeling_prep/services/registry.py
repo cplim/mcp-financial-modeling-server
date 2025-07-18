@@ -7,10 +7,13 @@ from mcp.types import TextContent, Tool
 from ..fmp_client import FMPClient
 from .base import BaseFinancialService
 from .company_profile import CompanyProfileService
+from .dcf_valuation import DCFValuationService
+from .financial_ratios import FinancialRatiosService
 from .historical_prices import HistoricalPricesService
 from .income_statement import IncomeStatementService
 from .market_indices import MarketIndicesService
 from .stock_quote import StockQuoteService
+from .technical_indicators import TechnicalIndicatorsService
 from .trading_volume import TradingVolumeService
 
 
@@ -37,6 +40,9 @@ class ServiceRegistry:
             HistoricalPricesService,
             MarketIndicesService,
             TradingVolumeService,
+            FinancialRatiosService,
+            DCFValuationService,
+            TechnicalIndicatorsService,
         ]
 
         for service_class in service_classes:

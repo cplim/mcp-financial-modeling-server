@@ -133,6 +133,9 @@ class TestServiceRegistry:
             "get_historical_prices",
             "get_market_indices",
             "get_trading_volume",
+            "get_financial_ratios",
+            "get_dcf_valuation",
+            "get_technical_indicators",
         ]
 
         for service_name in expected_services:
@@ -148,7 +151,7 @@ class TestServiceRegistry:
 
         tools = registry.get_all_tools()
 
-        assert len(tools) == 6  # Should have 6 tools
+        assert len(tools) == 9  # Should have 9 tools
         assert all(isinstance(tool, Tool) for tool in tools)
 
         tool_names = [tool.name for tool in tools]
@@ -159,6 +162,9 @@ class TestServiceRegistry:
             "get_historical_prices",
             "get_market_indices",
             "get_trading_volume",
+            "get_financial_ratios",
+            "get_dcf_valuation",
+            "get_technical_indicators",
         ]
 
         for name in expected_names:
@@ -195,3 +201,244 @@ class TestServiceRegistry:
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
         assert "Unknown tool: unknown_tool" in result[0].text
+
+
+class TestFinancialRatiosService:
+    """Test the financial ratios service."""
+
+    @pytest.fixture
+    def fmp_client(self):
+        """Create a test FMP client."""
+        return FMPClient("test_key")
+
+    @pytest.fixture
+    def service(self, fmp_client):
+        """Create a test financial ratios service."""
+        from mcp_financial_modeling_prep.services.financial_ratios import FinancialRatiosService
+
+        return FinancialRatiosService(fmp_client)
+
+    def test_service_properties(self, service):
+        """Test service properties."""
+        assert service.name == "get_financial_ratios"
+        assert "financial ratios" in service.description.lower()
+        assert service.input_schema["type"] == "object"
+        assert "symbol" in service.input_schema["properties"]
+        assert service.input_schema["required"] == ["symbol"]
+
+    def test_get_tool_definition(self, service):
+        """Test get_tool_definition method."""
+        tool = service.get_tool_definition()
+        assert tool.name == "get_financial_ratios"
+        assert tool.description == service.description
+        assert tool.inputSchema == service.input_schema
+
+    @pytest.mark.asyncio
+    async def test_execute_success(self, service, fmp_client):
+        """Test successful execution of financial ratios service."""
+        with patch.object(fmp_client, "_make_request") as mock_request:
+            mock_request.return_value = [
+                {
+                    "symbol": "AAPL",
+                    "date": "2023-12-31",
+                    "currentRatio": 1.029,
+                    "quickRatio": 0.985,
+                    "debtEquityRatio": 1.969,
+                    "returnOnEquity": 1.474,
+                    "returnOnAssets": 0.223,
+                    "grossProfitMargin": 0.441,
+                    "netProfitMargin": 0.253,
+                    "operatingProfitMargin": 0.298,
+                }
+            ]
+
+            result = await service.execute({"symbol": "AAPL"})
+
+            assert len(result) == 1
+            assert isinstance(result[0], TextContent)
+            assert result[0].type == "text"
+            assert "Financial Ratios for AAPL" in result[0].text
+            assert "147.40%" in result[0].text  # ROE formatted as percentage
+            assert "1.97" in result[0].text  # Debt-to-Equity ratio
+
+    @pytest.mark.asyncio
+    async def test_execute_missing_symbol(self, service):
+        """Test execution with missing symbol."""
+        result = await service.execute({})
+
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert result[0].type == "text"
+        assert "Error: Symbol is required" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_execute_no_data(self, service, fmp_client):
+        """Test execution when no data is found."""
+        with patch.object(fmp_client, "_make_request") as mock_request:
+            mock_request.return_value = []
+
+            result = await service.execute({"symbol": "INVALID"})
+
+            assert len(result) == 1
+            assert isinstance(result[0], TextContent)
+            assert result[0].type == "text"
+            assert "No data found for symbol: INVALID" in result[0].text
+
+
+class TestDCFValuationService:
+    """Test the DCF valuation service."""
+
+    @pytest.fixture
+    def fmp_client(self):
+        """Create a test FMP client."""
+        return FMPClient("test_key")
+
+    @pytest.fixture
+    def service(self, fmp_client):
+        """Create a test DCF valuation service."""
+        from mcp_financial_modeling_prep.services.dcf_valuation import DCFValuationService
+
+        return DCFValuationService(fmp_client)
+
+    def test_service_properties(self, service):
+        """Test service properties."""
+        assert service.name == "get_dcf_valuation"
+        assert "dcf" in service.description.lower()
+        assert service.input_schema["type"] == "object"
+        assert "symbol" in service.input_schema["properties"]
+        assert service.input_schema["required"] == ["symbol"]
+
+    def test_get_tool_definition(self, service):
+        """Test get_tool_definition method."""
+        tool = service.get_tool_definition()
+        assert tool.name == "get_dcf_valuation"
+        assert tool.description == service.description
+        assert tool.inputSchema == service.input_schema
+
+    @pytest.mark.asyncio
+    async def test_execute_success(self, service, fmp_client):
+        """Test successful execution of DCF valuation service."""
+        with patch.object(fmp_client, "_make_request") as mock_request:
+            mock_request.return_value = [
+                {"symbol": "AAPL", "date": "2023-12-31", "dcf": 181.50, "Stock Price": 193.60}
+            ]
+
+            result = await service.execute({"symbol": "AAPL"})
+
+            assert len(result) == 1
+            assert isinstance(result[0], TextContent)
+            assert result[0].type == "text"
+            assert "DCF Valuation Analysis for AAPL" in result[0].text
+            assert "$181.50" in result[0].text  # DCF value
+            assert "$193.60" in result[0].text  # Stock price
+            assert "Overvalued" in result[0].text  # Should show overvalued
+
+    @pytest.mark.asyncio
+    async def test_execute_missing_symbol(self, service):
+        """Test execution with missing symbol."""
+        result = await service.execute({})
+
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert result[0].type == "text"
+        assert "Error: Symbol is required" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_execute_no_data(self, service, fmp_client):
+        """Test execution when no data is found."""
+        with patch.object(fmp_client, "_make_request") as mock_request:
+            mock_request.return_value = []
+
+            result = await service.execute({"symbol": "INVALID"})
+
+            assert len(result) == 1
+            assert isinstance(result[0], TextContent)
+            assert result[0].type == "text"
+            assert "No data found for symbol: INVALID" in result[0].text
+
+
+class TestTechnicalIndicatorsService:
+    """Test the technical indicators service."""
+
+    @pytest.fixture
+    def fmp_client(self):
+        """Create a test FMP client."""
+        return FMPClient("test_key")
+
+    @pytest.fixture
+    def service(self, fmp_client):
+        """Create a test technical indicators service."""
+        from mcp_financial_modeling_prep.services.technical_indicators import (
+            TechnicalIndicatorsService,
+        )
+
+        return TechnicalIndicatorsService(fmp_client)
+
+    def test_service_properties(self, service):
+        """Test service properties."""
+        assert service.name == "get_technical_indicators"
+        assert "technical" in service.description.lower()
+        assert service.input_schema["type"] == "object"
+        assert "symbol" in service.input_schema["properties"]
+        assert "indicator_type" in service.input_schema["properties"]
+        assert "period" in service.input_schema["properties"]
+        assert service.input_schema["required"] == ["symbol", "indicator_type", "period"]
+
+    def test_get_tool_definition(self, service):
+        """Test get_tool_definition method."""
+        tool = service.get_tool_definition()
+        assert tool.name == "get_technical_indicators"
+        assert tool.description == service.description
+        assert tool.inputSchema == service.input_schema
+
+    @pytest.mark.asyncio
+    async def test_execute_success(self, service, fmp_client):
+        """Test successful execution of technical indicators service."""
+        with patch.object(fmp_client, "_make_request") as mock_request:
+            mock_request.return_value = [
+                {
+                    "date": "2023-12-29",
+                    "open": 193.11,
+                    "high": 194.66,
+                    "low": 193.11,
+                    "close": 193.58,
+                    "volume": 42628802,
+                    "sma": 191.25,
+                }
+            ]
+
+            result = await service.execute(
+                {"symbol": "AAPL", "indicator_type": "sma", "period": 10}
+            )
+
+            assert len(result) == 1
+            assert isinstance(result[0], TextContent)
+            assert result[0].type == "text"
+            assert "Technical Indicators for AAPL" in result[0].text
+            assert "SMA (10-day)" in result[0].text
+            assert "$191.25" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_execute_missing_symbol(self, service):
+        """Test execution with missing symbol."""
+        result = await service.execute({"indicator_type": "sma", "period": 10})
+
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert result[0].type == "text"
+        assert "Error: Symbol is required" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_execute_no_data(self, service, fmp_client):
+        """Test execution when no data is found."""
+        with patch.object(fmp_client, "_make_request") as mock_request:
+            mock_request.return_value = []
+
+            result = await service.execute(
+                {"symbol": "INVALID", "indicator_type": "sma", "period": 10}
+            )
+
+            assert len(result) == 1
+            assert isinstance(result[0], TextContent)
+            assert result[0].type == "text"
+            assert "No data found for symbol: INVALID" in result[0].text
