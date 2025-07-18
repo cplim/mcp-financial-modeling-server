@@ -117,7 +117,7 @@ uv sync --dev
 ### Testing
 
 ```bash
-# Run all tests
+# Run all tests (unit tests only)
 uv run pytest
 
 # Run tests with coverage
@@ -125,7 +125,27 @@ uv run pytest --cov=src/mcp_financial_modeling_prep --cov-report=term
 
 # Run specific test file
 uv run pytest tests/test_financial_tools.py
+
+# Run integration tests (requires FMP_API_KEY)
+export FMP_API_KEY="your_api_key_here"
+uv run pytest tests/test_fmp_integration.py -m integration
+
+# Run integration tests with script
+python scripts/run_integration_tests.py
 ```
+
+#### Integration Tests
+
+Integration tests validate the FMP API client with real API calls. These tests:
+
+- **Require FMP_API_KEY**: Set your Financial Modeling Prep API key as an environment variable
+- **Make real HTTP requests**: Test actual API endpoints and responses
+- **Validate data structure**: Ensure API responses match expected formats
+- **Test error handling**: Verify proper handling of API errors and edge cases
+
+**Get your free API key**: https://financialmodelingprep.com/developer/docs
+
+**Note**: Integration tests are skipped in CI/CD if FMP_API_KEY is not available.
 
 ### Code Quality
 
@@ -166,14 +186,15 @@ uv run black .
 - [ ] Comprehensive documentation
 
 ### 🧪 Test Coverage
-- **Total Tests**: 90 (all passing)
-- **Test Files**: 5 (server, FMP client, financial tools, services, config loader)
+- **Total Tests**: 90 unit tests + 13 integration tests (all passing)
+- **Test Files**: 6 (server, FMP client, financial tools, services, config loader, integration)
 - **Coverage**: Comprehensive mocking and integration testing including resources and prompts
 - **Architecture**: Service abstraction pattern with individual service tests
 - **Analysis Tools**: Complete TDD implementation for financial analysis services
 - **Resources & Prompts**: Full test coverage for MCP resources and prompts functionality
 - **Configuration**: Test coverage for configuration-based resource and prompt loading
 - **Technical Indicators**: Enhanced API with enums, timeframes, and date range support
+- **Integration Tests**: Real API validation with FMP endpoints and error handling
 
 ## License
 

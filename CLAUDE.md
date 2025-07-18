@@ -13,7 +13,7 @@ uv sync --dev
 
 ### Testing
 ```bash
-# Run all tests
+# Run all tests (unit tests only)
 uv run pytest
 
 # Run tests with coverage report
@@ -29,6 +29,13 @@ uv run pytest tests/test_services.py
 uv run pytest tests/test_server.py::TestMCPServer::test_server_creation
 uv run pytest tests/test_financial_tools.py::TestFinancialTools::test_get_company_profile_tool
 uv run pytest tests/test_services.py::TestCompanyProfileService::test_execute_success
+
+# Run integration tests (requires FMP_API_KEY)
+export FMP_API_KEY="your_api_key_here"
+uv run pytest tests/test_fmp_integration.py -m integration
+
+# Run integration tests with helper script
+python scripts/run_integration_tests.py
 ```
 
 ### Code Quality
@@ -161,3 +168,8 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 ## Development Best Practices
 
 - Always update documentation before committing and pushing code
+
+## Git Workflow Best Practices
+
+- From now onwards create a new branch in git before making any code changes
+- Once code has been committed, pushed and passes in CI, merge it back to main

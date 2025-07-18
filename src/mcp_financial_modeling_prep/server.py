@@ -3,9 +3,11 @@
 import asyncio
 import os
 import sys
+from pathlib import Path
 
 import mcp.server.stdio
 from mcp.server import Server
+from dotenv import load_dotenv
 from mcp.server.models import InitializationOptions
 from mcp.types import Prompt, Resource, TextContent, Tool
 
@@ -56,10 +58,16 @@ def create_server(api_key: str) -> Server:
 
 async def main():
     """Main entry point for the server."""
-    # Get FMP API key from environment
+    # Load environment variables from .env file if it exists
+    env_file = Path.cwd() / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+    
+    # Get FMP API key from environment (supports both system env vars and .env file)
     api_key = os.getenv("FMP_API_KEY")
     if not api_key:
         print("Error: FMP_API_KEY environment variable is required", file=sys.stderr)
+        print("Create a .env file with FMP_API_KEY=your_api_key_here", file=sys.stderr)
         sys.exit(1)
 
     server = create_server(api_key)
