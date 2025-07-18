@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "symbol": {
+      "type": "string",
+      "description": "Stock symbol (e.g., AAPL)"
+    }
+  },
+  "required": ["symbol"]
+}

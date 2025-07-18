@@ -4,6 +4,7 @@ from typing import Any
 
 from mcp.types import TextContent, Tool
 
+from ..config.loader import ConfigLoader
 from ..fmp_client import FMPClient
 from .base import BaseFinancialService
 from .company_profile import CompanyProfileService
@@ -20,13 +21,15 @@ from .trading_volume import TradingVolumeService
 class ServiceRegistry:
     """Registry for managing financial data services."""
 
-    def __init__(self, fmp_client: FMPClient):
+    def __init__(self, fmp_client: FMPClient, config_loader: ConfigLoader):
         """Initialize the service registry.
 
         Args:
             fmp_client: Financial Modeling Prep API client
+            config_loader: Configuration loader for schemas
         """
         self.fmp_client = fmp_client
+        self.config_loader = config_loader
         self.services: dict[str, BaseFinancialService] = {}
         self._register_services()
 
@@ -46,7 +49,7 @@ class ServiceRegistry:
         ]
 
         for service_class in service_classes:
-            service = service_class(self.fmp_client)  # type: ignore[abstract]
+            service = service_class(self.fmp_client, self.config_loader)  # type: ignore[abstract]
             self.services[service.name] = service
 
     def get_all_tools(self) -> list[Tool]:

@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "symbol": {
+      "type": "string",
+      "description": "Stock symbol (e.g., AAPL)"
+    },
+    "from_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date for historical data (YYYY-MM-DD)"
+    },
+    "to_date": {
+      "type": "string",
+      "format": "date",
+      "description": "End date for historical data (YYYY-MM-DD)"
+    }
+  },
+  "required": ["symbol"]
+}

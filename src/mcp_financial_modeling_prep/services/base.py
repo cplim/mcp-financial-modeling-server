@@ -5,19 +5,22 @@ from typing import Any
 
 from mcp.types import TextContent, Tool
 
+from ..config.loader import ConfigLoader
 from ..fmp_client import FMPClient
 
 
 class BaseFinancialService(ABC):
     """Abstract base class for financial data services."""
 
-    def __init__(self, fmp_client: FMPClient):
-        """Initialize the service with FMP client.
+    def __init__(self, fmp_client: FMPClient, config_loader: ConfigLoader):
+        """Initialize the service with FMP client and config loader.
 
         Args:
             fmp_client: Financial Modeling Prep API client
+            config_loader: Configuration loader for schemas
         """
         self.fmp_client = fmp_client
+        self.config_loader = config_loader
 
     @property
     @abstractmethod
@@ -32,10 +35,16 @@ class BaseFinancialService(ABC):
         pass
 
     @property
-    @abstractmethod
     def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        pass
+        """Return the JSON schema for input parameters.
+
+        Loads schema from configuration file based on service name.
+        Raises ValueError if no schema configuration is found.
+        """
+        schema = self.config_loader.load_service_schema(self.name)
+        if not schema:
+            raise ValueError(f"No schema configuration found for service: {self.name}")
+        return schema
 
     @abstractmethod
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:

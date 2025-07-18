@@ -20,20 +20,6 @@ class CompanyProfileService(BaseFinancialService):
         """Return the service description."""
         return "Get company profile information"
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {
-                "symbol": {
-                    "type": "string",
-                    "description": "Stock symbol (e.g., AAPL)",
-                }
-            },
-            "required": ["symbol"],
-        }
-
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
         """Execute the company profile service.
 

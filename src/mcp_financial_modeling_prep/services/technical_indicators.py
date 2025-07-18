@@ -20,58 +20,6 @@ class TechnicalIndicatorsService(BaseFinancialService):
         """Return the service description."""
         return "Get technical indicators for stock analysis (SMA, EMA, RSI, etc.)"
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {
-                "symbol": {
-                    "type": "string",
-                    "description": "Stock symbol (e.g., AAPL)",
-                },
-                "indicator_type": {
-                    "type": "string",
-                    "description": (
-                        "Type of technical indicator (sma, ema, rsi, williams, adx, etc.)"
-                    ),
-                    "enum": [
-                        "sma",
-                        "ema",
-                        "wma",
-                        "dema",
-                        "tema",
-                        "williams",
-                        "rsi",
-                        "adx",
-                        "standarddeviation",
-                    ],
-                },
-                "period": {
-                    "type": "integer",
-                    "description": "Period for the indicator calculation (defaults to 20)",
-                    "minimum": 1,
-                    "maximum": 200,
-                },
-                "timeframe": {
-                    "type": "string",
-                    "description": "Time frame for the data (defaults to 1day)",
-                    "enum": ["1min", "5min", "15min", "30min", "1hour", "4hour", "1day"],
-                },
-                "from_date": {
-                    "type": "string",
-                    "description": "Start date (YYYY-MM-DD format, optional)",
-                    "format": "date",
-                },
-                "to_date": {
-                    "type": "string",
-                    "description": "End date (YYYY-MM-DD format, optional)",
-                    "format": "date",
-                },
-            },
-            "required": ["symbol"],
-        }
-
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
         """Execute the technical indicators service.
 

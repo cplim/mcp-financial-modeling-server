@@ -20,20 +20,6 @@ class DCFValuationService(BaseFinancialService):
         """Return the service description."""
         return "Get discounted cash flow (DCF) valuation for a company"
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {
-                "symbol": {
-                    "type": "string",
-                    "description": "Stock symbol (e.g., AAPL)",
-                }
-            },
-            "required": ["symbol"],
-        }
-
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
         """Execute the DCF valuation service.
 

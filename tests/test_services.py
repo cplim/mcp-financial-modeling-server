@@ -24,7 +24,7 @@ class TestBaseFinancialService:
 
         # Check that all required methods are defined as abstract
         abstract_methods = BaseFinancialService.__abstractmethods__
-        expected_methods = {"name", "description", "input_schema", "execute"}
+        expected_methods = {"name", "description", "execute"}
         assert abstract_methods == expected_methods
 
 
@@ -37,11 +37,18 @@ class TestCompanyProfileService:
         return FMPClient("test_key")
 
     @pytest.fixture
-    def service(self, fmp_client):
+    def config_loader(self):
+        """Create a test config loader."""
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        return ConfigLoader()
+
+    @pytest.fixture
+    def service(self, fmp_client, config_loader):
         """Create a company profile service instance."""
         from mcp_financial_modeling_prep.services.company_profile import CompanyProfileService
 
-        return CompanyProfileService(fmp_client)
+        return CompanyProfileService(fmp_client, config_loader)
 
     def test_service_properties(self, service):
         """Test that service properties are correctly defined."""
@@ -113,9 +120,13 @@ class TestServiceRegistry:
         from mcp_financial_modeling_prep.services.registry import ServiceRegistry
 
         fmp_client = FMPClient("test_key")
-        registry = ServiceRegistry(fmp_client)
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        config_loader = ConfigLoader()
+        registry = ServiceRegistry(fmp_client, config_loader)
 
         assert registry.fmp_client == fmp_client
+        assert registry.config_loader == config_loader
         assert hasattr(registry, "services")
 
     def test_registry_registers_services(self):
@@ -123,7 +134,10 @@ class TestServiceRegistry:
         from mcp_financial_modeling_prep.services.registry import ServiceRegistry
 
         fmp_client = FMPClient("test_key")
-        registry = ServiceRegistry(fmp_client)
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        config_loader = ConfigLoader()
+        registry = ServiceRegistry(fmp_client, config_loader)
 
         # Should register all expected services
         expected_services = [
@@ -147,7 +161,10 @@ class TestServiceRegistry:
         from mcp_financial_modeling_prep.services.registry import ServiceRegistry
 
         fmp_client = FMPClient("test_key")
-        registry = ServiceRegistry(fmp_client)
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        config_loader = ConfigLoader()
+        registry = ServiceRegistry(fmp_client, config_loader)
 
         tools = registry.get_all_tools()
 
@@ -176,7 +193,10 @@ class TestServiceRegistry:
         from mcp_financial_modeling_prep.services.registry import ServiceRegistry
 
         fmp_client = FMPClient("test_key")
-        registry = ServiceRegistry(fmp_client)
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        config_loader = ConfigLoader()
+        registry = ServiceRegistry(fmp_client, config_loader)
 
         # Test executing a known tool
         with patch.object(fmp_client, "_make_request") as mock_request:
@@ -194,7 +214,10 @@ class TestServiceRegistry:
         from mcp_financial_modeling_prep.services.registry import ServiceRegistry
 
         fmp_client = FMPClient("test_key")
-        registry = ServiceRegistry(fmp_client)
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        config_loader = ConfigLoader()
+        registry = ServiceRegistry(fmp_client, config_loader)
 
         result = await registry.execute_tool("unknown_tool", {})
 
@@ -212,11 +235,18 @@ class TestFinancialRatiosService:
         return FMPClient("test_key")
 
     @pytest.fixture
-    def service(self, fmp_client):
+    def config_loader(self):
+        """Create a test config loader."""
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        return ConfigLoader()
+
+    @pytest.fixture
+    def service(self, fmp_client, config_loader):
         """Create a test financial ratios service."""
         from mcp_financial_modeling_prep.services.financial_ratios import FinancialRatiosService
 
-        return FinancialRatiosService(fmp_client)
+        return FinancialRatiosService(fmp_client, config_loader)
 
     def test_service_properties(self, service):
         """Test service properties."""
@@ -294,11 +324,18 @@ class TestDCFValuationService:
         return FMPClient("test_key")
 
     @pytest.fixture
-    def service(self, fmp_client):
+    def config_loader(self):
+        """Create a test config loader."""
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        return ConfigLoader()
+
+    @pytest.fixture
+    def service(self, fmp_client, config_loader):
         """Create a test DCF valuation service."""
         from mcp_financial_modeling_prep.services.dcf_valuation import DCFValuationService
 
-        return DCFValuationService(fmp_client)
+        return DCFValuationService(fmp_client, config_loader)
 
     def test_service_properties(self, service):
         """Test service properties."""
@@ -366,13 +403,20 @@ class TestTechnicalIndicatorsService:
         return FMPClient("test_key")
 
     @pytest.fixture
-    def service(self, fmp_client):
+    def config_loader(self):
+        """Create a test config loader."""
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        return ConfigLoader()
+
+    @pytest.fixture
+    def service(self, fmp_client, config_loader):
         """Create a test technical indicators service."""
         from mcp_financial_modeling_prep.services.technical_indicators import (
             TechnicalIndicatorsService,
         )
 
-        return TechnicalIndicatorsService(fmp_client)
+        return TechnicalIndicatorsService(fmp_client, config_loader)
 
     def test_service_properties(self, service):
         """Test service properties."""

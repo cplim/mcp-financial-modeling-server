@@ -23,41 +23,6 @@ class EnhancedDCFAnalysisService(BaseFinancialService):
             "and comprehensive financial health metrics"
         )
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {
-                "symbol": {
-                    "type": "string",
-                    "description": "Stock symbol (e.g., AAPL)",
-                },
-                "growth_scenarios": {
-                    "type": "object",
-                    "description": "Growth scenarios for sensitivity analysis",
-                    "properties": {
-                        "bull": {"type": "number", "description": "Bull case growth rate"},
-                        "base": {"type": "number", "description": "Base case growth rate"},
-                        "bear": {"type": "number", "description": "Bear case growth rate"},
-                    },
-                },
-                "discount_rate_adjustment": {
-                    "type": "number",
-                    "description": "Adjustment to discount rate (e.g., 0.02 for +2%)",
-                },
-                "terminal_growth_rate": {
-                    "type": "number",
-                    "description": "Terminal growth rate for DCF calculation",
-                },
-                "tax_rate": {
-                    "type": "number",
-                    "description": "Corporate tax rate for calculations",
-                },
-            },
-            "required": ["symbol"],
-        }
-
     def _calculate_levered_dcf(
         self,
         unlevered_dcf: float,

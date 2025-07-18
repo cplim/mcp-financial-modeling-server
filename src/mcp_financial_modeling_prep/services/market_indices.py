@@ -20,15 +20,6 @@ class MarketIndicesService(BaseFinancialService):
         """Return the service description."""
         return "Get market indices information (S&P 500, NASDAQ, DOW)"
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {},
-            "required": [],
-        }
-
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
         """Execute the market indices service.
 

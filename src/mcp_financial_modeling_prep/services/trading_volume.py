@@ -20,20 +20,6 @@ class TradingVolumeService(BaseFinancialService):
         """Return the service description."""
         return "Get trading volume data for a stock symbol"
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {
-                "symbol": {
-                    "type": "string",
-                    "description": "Stock symbol (e.g., AAPL)",
-                }
-            },
-            "required": ["symbol"],
-        }
-
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
         """Execute the trading volume service.
 

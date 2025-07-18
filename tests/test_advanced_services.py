@@ -17,11 +17,18 @@ class TestEnhancedDCFAnalysisService:
         return FMPClient("test_key")
 
     @pytest.fixture
-    def service(self, fmp_client):
+    def config_loader(self):
+        """Create a test config loader."""
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        return ConfigLoader()
+
+    @pytest.fixture
+    def service(self, fmp_client, config_loader):
         """Create an enhanced DCF analysis service instance."""
         from mcp_financial_modeling_prep.services.enhanced_dcf import EnhancedDCFAnalysisService
 
-        return EnhancedDCFAnalysisService(fmp_client)
+        return EnhancedDCFAnalysisService(fmp_client, config_loader)
 
     def test_service_properties(self, service):
         """Test that service properties are correctly defined."""
@@ -215,13 +222,20 @@ class TestAdvancedFinancialHealthService:
         return FMPClient("test_key")
 
     @pytest.fixture
-    def service(self, fmp_client):
+    def config_loader(self):
+        """Create a test config loader."""
+        from mcp_financial_modeling_prep.config.loader import ConfigLoader
+
+        return ConfigLoader()
+
+    @pytest.fixture
+    def service(self, fmp_client, config_loader):
         """Create an advanced financial health service instance."""
         from mcp_financial_modeling_prep.services.advanced_financial_health import (
             AdvancedFinancialHealthService,
         )
 
-        return AdvancedFinancialHealthService(fmp_client)
+        return AdvancedFinancialHealthService(fmp_client, config_loader)
 
     def test_service_properties(self, service):
         """Test that service properties are correctly defined."""

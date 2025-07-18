@@ -189,3 +189,69 @@ class TestConfigLoader:
 
             assert len(prompts) == 1
             assert prompts[0].arguments[0].required is True
+
+    def test_load_service_schema_with_valid_config(self):
+        """Test loading service schema from valid JSON file."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_dir = Path(temp_dir)
+            services_dir = config_dir / "services"
+            services_dir.mkdir()
+
+            # Create test service schema
+            service_schema = {
+                "type": "object",
+                "properties": {
+                    "symbol": {"type": "string", "description": "Stock symbol (e.g., AAPL)"},
+                    "optional_param": {"type": "number", "description": "Optional parameter"},
+                },
+                "required": ["symbol"],
+            }
+
+            with open(services_dir / "company_profile.json", "w") as f:
+                json.dump(service_schema, f)
+
+            loader = ConfigLoader(config_dir=config_dir)
+            schema = loader.load_service_schema("company_profile")
+
+            assert schema == service_schema
+            assert schema["type"] == "object"
+            assert "symbol" in schema["properties"]
+            assert schema["required"] == ["symbol"]
+
+    def test_load_service_schema_with_missing_file(self):
+        """Test loading service schema when JSON file doesn't exist."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_dir = Path(temp_dir)
+            services_dir = config_dir / "services"
+            services_dir.mkdir()
+
+            loader = ConfigLoader(config_dir=config_dir)
+            schema = loader.load_service_schema("nonexistent_service")
+
+            assert schema is None
+
+    def test_load_service_schema_with_missing_services_directory(self):
+        """Test loading service schema when services directory doesn't exist."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_dir = Path(temp_dir)
+
+            loader = ConfigLoader(config_dir=config_dir)
+            schema = loader.load_service_schema("company_profile")
+
+            assert schema is None
+
+    def test_load_service_schema_with_invalid_json(self):
+        """Test loading service schema with invalid JSON."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_dir = Path(temp_dir)
+            services_dir = config_dir / "services"
+            services_dir.mkdir()
+
+            # Create invalid JSON file
+            with open(services_dir / "invalid_service.json", "w") as f:
+                f.write("{ invalid json content")
+
+            loader = ConfigLoader(config_dir=config_dir)
+            schema = loader.load_service_schema("invalid_service")
+
+            assert schema is None

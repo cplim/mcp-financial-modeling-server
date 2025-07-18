@@ -27,11 +27,11 @@ def create_server(api_key: str) -> Server:
     # Initialize FMP client with API key
     fmp_client = FMPClient(api_key=api_key)
 
-    # Initialize service registry
-    service_registry = ServiceRegistry(fmp_client)
-
     # Initialize configuration loader
     config_loader = ConfigLoader()
+
+    # Initialize service registry
+    service_registry = ServiceRegistry(fmp_client, config_loader)
 
     @server.list_tools()
     async def handle_list_tools() -> list[Tool]:

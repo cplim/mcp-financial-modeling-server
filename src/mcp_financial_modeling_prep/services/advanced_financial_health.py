@@ -23,20 +23,6 @@ class AdvancedFinancialHealthService(BaseFinancialService):
             "Altman Z-Score and Piotroski F-Score"
         )
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {
-                "symbol": {
-                    "type": "string",
-                    "description": "Stock symbol (e.g., AAPL)",
-                }
-            },
-            "required": ["symbol"],
-        }
-
     def _calculate_altman_z_score(
         self,
         working_capital: float,

@@ -21,30 +21,6 @@ class HistoricalPricesService(BaseFinancialService):
         """Return the service description."""
         return "Get historical price data for a stock symbol"
 
-    @property
-    def input_schema(self) -> dict[str, Any]:
-        """Return the JSON schema for input parameters."""
-        return {
-            "type": "object",
-            "properties": {
-                "symbol": {
-                    "type": "string",
-                    "description": "Stock symbol (e.g., AAPL)",
-                },
-                "from_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Start date for historical data (YYYY-MM-DD)",
-                },
-                "to_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "End date for historical data (YYYY-MM-DD)",
-                },
-            },
-            "required": ["symbol"],
-        }
-
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
         """Execute the historical prices service.
 

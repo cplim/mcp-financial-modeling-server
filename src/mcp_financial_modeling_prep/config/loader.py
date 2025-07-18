@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from typing import Any
 
 from mcp.types import Prompt, PromptArgument, Resource
 from pydantic import AnyUrl
@@ -78,3 +79,24 @@ class ConfigLoader:
             prompts.append(prompt)
 
         return prompts
+
+    def load_service_schema(self, service_name: str) -> dict[str, Any] | None:
+        """Load service schema from JSON configuration file.
+
+        Args:
+            service_name: Name of the service (without .json extension)
+
+        Returns:
+            Service schema dictionary, or empty dict if file doesn't exist or is invalid
+        """
+        tool_schema_file = self.config_dir / f"services/{service_name}.json"
+        if not tool_schema_file.exists():
+            return None
+
+        with open(tool_schema_file) as f:
+            try:
+                schema = json.load(f)
+            except json.JSONDecodeError:
+                schema = None
+
+        return schema
