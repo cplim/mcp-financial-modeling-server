@@ -9,6 +9,7 @@ from mcp.server import Server
 from mcp.server.models import InitializationOptions
 from mcp.types import Prompt, Resource, TextContent, Tool
 
+from .config import ConfigLoader
 from .fmp_client import FMPClient
 from .services.registry import ServiceRegistry
 
@@ -27,6 +28,9 @@ def create_server(api_key: str) -> Server:
     # Initialize service registry
     service_registry = ServiceRegistry(fmp_client)
 
+    # Initialize configuration loader
+    config_loader = ConfigLoader()
+
     @server.list_tools()
     async def handle_list_tools() -> list[Tool]:
         """List available financial tools."""
@@ -35,79 +39,12 @@ def create_server(api_key: str) -> Server:
     @server.list_resources()
     async def handle_list_resources() -> list[Resource]:
         """List available financial resources."""
-        from pydantic import AnyUrl
-
-        return [
-            Resource(
-                uri=AnyUrl("financial://templates/analysis"),
-                name="Financial Analysis Templates",
-                description="Templates for comprehensive financial analysis and reporting",
-                mimeType="text/plain",
-            ),
-            Resource(
-                uri=AnyUrl("financial://templates/report"),
-                name="Financial Report Templates",
-                description="Templates for generating financial reports and summaries",
-                mimeType="text/plain",
-            ),
-            Resource(
-                uri=AnyUrl("financial://templates/company"),
-                name="Company Analysis Templates",
-                description="Templates for company profile and performance analysis",
-                mimeType="text/plain",
-            ),
-        ]
+        return config_loader.load_resources()
 
     @server.list_prompts()
     async def handle_list_prompts() -> list[Prompt]:
         """List available financial analysis prompts."""
-        from mcp.types import PromptArgument
-
-        return [
-            Prompt(
-                name="analyze_company",
-                description="Analyze a company's financial performance comprehensively",
-                arguments=[
-                    PromptArgument(
-                        name="symbol",
-                        description="Stock symbol to analyze",
-                        required=True,
-                    )
-                ],
-            ),
-            Prompt(
-                name="technical_analysis",
-                description="Perform technical analysis with indicators and trends",
-                arguments=[
-                    PromptArgument(
-                        name="symbol",
-                        description="Stock symbol to analyze",
-                        required=True,
-                    ),
-                    PromptArgument(
-                        name="period",
-                        description="Time period for analysis (e.g., 20, 50, 200 days)",
-                        required=True,
-                    ),
-                ],
-            ),
-            Prompt(
-                name="financial_health",
-                description="Assess company's financial health using ratios and metrics",
-                arguments=[
-                    PromptArgument(
-                        name="symbol",
-                        description="Stock symbol to analyze",
-                        required=True,
-                    ),
-                    PromptArgument(
-                        name="benchmark",
-                        description="Benchmark symbol for comparison (optional)",
-                        required=False,
-                    ),
-                ],
-            ),
-        ]
+        return config_loader.load_prompts()
 
     @server.call_tool()
     async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:

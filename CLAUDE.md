@@ -127,10 +127,11 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 - ✅ Tool handlers for Financial Modeling Prep API calls (9 tools implemented)
 - ✅ Service abstraction pattern for maintainable architecture
 - ✅ Enhanced error handling and validation (comprehensive)
-- ✅ Full test coverage with proper MCP testing patterns (76 tests)
+- ✅ Full test coverage with proper MCP testing patterns (86 tests)
 - ✅ Market data tools (historical prices, indices, trading volume)
 - ✅ Financial analysis tools (ratios, DCF valuation, technical indicators)
 - ✅ MCP resources and prompts for financial analysis workflows
+- ✅ Configuration-based resources and prompts (JSON files)
 - 🚧 Docker containerization support (planned)
 - 🚧 Advanced financial analysis tools (planned)
 
@@ -140,6 +141,13 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 - **ServiceRegistry**: Manages service discovery and tool execution
 - **Clean Separation**: Each service handles its own validation, formatting, and error handling
 - **Extensibility**: New tools can be added by creating new service classes
+
+**Configuration Architecture Implementation**:
+- **ConfigLoader**: Loads MCP resources and prompts from JSON configuration files
+- **Configuration Files**: `resources.json` and `prompts.json` in `/src/mcp_financial_modeling_prep/config/`
+- **Clean Separation**: Tools (dynamic services) vs Resources/Prompts (static configurations)
+- **Extensibility**: New resources and prompts can be added by modifying JSON configuration files
+- **Testability**: Full test coverage for configuration loading with temporary files
 
 **Testing Patterns**:
 - Mock `FMPClient._make_request` at class level for comprehensive testing

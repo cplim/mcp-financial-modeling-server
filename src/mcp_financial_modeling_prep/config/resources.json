@@ -1,0 +1,22 @@
+{
+  "resources": [
+    {
+      "uri": "financial://templates/analysis",
+      "name": "Financial Analysis Templates",
+      "description": "Templates for comprehensive financial analysis and reporting",
+      "mimeType": "text/plain"
+    },
+    {
+      "uri": "financial://templates/report",
+      "name": "Financial Report Templates", 
+      "description": "Templates for generating financial reports and summaries",
+      "mimeType": "text/plain"
+    },
+    {
+      "uri": "financial://templates/company",
+      "name": "Company Analysis Templates",
+      "description": "Templates for company profile and performance analysis",
+      "mimeType": "text/plain"
+    }
+  ]
+}

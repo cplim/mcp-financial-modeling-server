@@ -24,14 +24,16 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 - **Advanced Analysis**: Analyst estimates and earnings forecasts
 
 ### 📋 MCP Resources & Prompts
-- **Resources**: 3 financial analysis templates
+- **Configuration-Based**: Resources and prompts are loaded from JSON configuration files
+- **Resources**: 3 financial analysis templates (configurable)
   - `financial://templates/analysis`: Comprehensive financial analysis templates
   - `financial://templates/report`: Financial report generation templates
   - `financial://templates/company`: Company analysis templates
-- **Prompts**: 3 structured financial analysis workflows
+- **Prompts**: 3 structured financial analysis workflows (configurable)
   - `analyze_company`: Complete company financial performance analysis
   - `technical_analysis`: Technical analysis with indicators and trends
   - `financial_health`: Financial health assessment with ratios and metrics
+- **Architecture**: Clean separation between Tools (dynamic services) and Resources/Prompts (static configurations)
 
 ## Installation
 
@@ -161,12 +163,13 @@ uv run black .
 - [ ] Comprehensive documentation
 
 ### 🧪 Test Coverage
-- **Total Tests**: 76 (all passing)
-- **Test Files**: 4 (server, FMP client, financial tools, services)
+- **Total Tests**: 86 (all passing)
+- **Test Files**: 5 (server, FMP client, financial tools, services, config loader)
 - **Coverage**: Comprehensive mocking and integration testing including resources and prompts
 - **Architecture**: Service abstraction pattern with individual service tests
 - **Analysis Tools**: Complete TDD implementation for financial analysis services
 - **Resources & Prompts**: Full test coverage for MCP resources and prompts functionality
+- **Configuration**: Test coverage for configuration-based resource and prompt loading
 
 ## License
 

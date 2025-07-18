@@ -1,0 +1,47 @@
+{
+  "prompts": [
+    {
+      "name": "analyze_company",
+      "description": "Analyze a company's financial performance comprehensively",
+      "arguments": [
+        {
+          "name": "symbol",
+          "description": "Stock symbol to analyze",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "technical_analysis",
+      "description": "Perform technical analysis with indicators and trends",
+      "arguments": [
+        {
+          "name": "symbol",
+          "description": "Stock symbol to analyze",
+          "required": true
+        },
+        {
+          "name": "period",
+          "description": "Time period for analysis (e.g., 20, 50, 200 days)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "financial_health",
+      "description": "Assess company's financial health using ratios and metrics",
+      "arguments": [
+        {
+          "name": "symbol",
+          "description": "Stock symbol to analyze",
+          "required": true
+        },
+        {
+          "name": "benchmark",
+          "description": "Benchmark symbol for comparison (optional)",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
