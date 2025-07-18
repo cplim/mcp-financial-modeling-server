@@ -6,8 +6,8 @@ integration tests if available.
 """
 
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -18,14 +18,15 @@ def main():
     if env_file.exists():
         try:
             from dotenv import load_dotenv
+
             load_dotenv(env_file)
             print("✅ .env file found and loaded")
         except ImportError:
             print("⚠️  .env file found but python-dotenv not installed")
             print("Run: uv sync --dev")
-    
+
     api_key = os.getenv("FMP_API_KEY")
-    
+
     if not api_key:
         print("❌ FMP_API_KEY environment variable not set")
         print("Integration tests require a valid Financial Modeling Prep API key.")
@@ -34,21 +35,19 @@ def main():
         print("  1. Set environment variable: export FMP_API_KEY=your_api_key_here")
         print("  2. Copy .env.example to .env and add your API key")
         sys.exit(1)
-    
+
     print("✅ FMP_API_KEY found - running integration tests...")
     print(f"Using API key: {api_key[:8]}{'*' * (len(api_key) - 8)}")
-    
+
     # Run integration tests only
     try:
-        result = subprocess.run([
-            "uv", "run", "pytest", 
-            "tests/test_fmp_integration.py", 
-            "-v", 
-            "-m", "integration"
-        ], check=True)
-        
+        subprocess.run(
+            ["uv", "run", "pytest", "tests/test_fmp_integration.py", "-v", "-m", "integration"],
+            check=True,
+        )
+
         print("\n✅ All integration tests passed!")
-        
+
     except subprocess.CalledProcessError as e:
         print(f"\n❌ Integration tests failed with exit code: {e.returncode}")
         sys.exit(e.returncode)

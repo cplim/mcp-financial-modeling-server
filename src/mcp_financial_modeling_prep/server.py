@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 
 import mcp.server.stdio
-from mcp.server import Server
 from dotenv import load_dotenv
+from mcp.server import Server
 from mcp.server.models import InitializationOptions
 from mcp.types import Prompt, Resource, TextContent, Tool
 
@@ -62,7 +62,7 @@ async def main():
     env_file = Path.cwd() / ".env"
     if env_file.exists():
         load_dotenv(env_file)
-    
+
     # Get FMP API key from environment (supports both system env vars and .env file)
     api_key = os.getenv("FMP_API_KEY")
     if not api_key:
