@@ -1,4 +1,4 @@
-"""Configuration loader for MCP resources and prompts."""
+"""Schema loader for MCP resources, prompts, and service tool schemas."""
 
 import json
 from pathlib import Path
@@ -8,27 +8,27 @@ from mcp.types import Prompt, PromptArgument, Resource
 from pydantic import AnyUrl
 
 
-class ConfigLoader:
-    """Loads MCP resources and prompts from configuration files."""
+class SchemaLoader:
+    """Loads MCP resources, prompts, and service tool schemas from schema files."""
 
     def __init__(self, config_dir: Path | None = None):
-        """Initialize the configuration loader.
+        """Initialize the schema loader.
 
         Args:
-            config_dir: Directory containing configuration files.
-                       If None, uses the default config directory.
+            config_dir: Directory containing schema files.
+                       If None, uses the default schema directory.
         """
         if config_dir is None:
             config_dir = Path(__file__).parent
-        self.config_dir = config_dir
+        self.schema_dir = config_dir
 
     def load_resources(self) -> list[Resource]:
-        """Load resources from configuration file.
+        """Load resources from schema file.
 
         Returns:
             List of Resource objects
         """
-        resources_file = self.config_dir / "resources.json"
+        resources_file = self.schema_dir / "resources.json"
         if not resources_file.exists():
             return []
 
@@ -48,12 +48,12 @@ class ConfigLoader:
         return resources
 
     def load_prompts(self) -> list[Prompt]:
-        """Load prompts from configuration file.
+        """Load prompts from schema file.
 
         Returns:
             List of Prompt objects
         """
-        prompts_file = self.config_dir / "prompts.json"
+        prompts_file = self.schema_dir / "prompts.json"
         if not prompts_file.exists():
             return []
 
@@ -81,15 +81,15 @@ class ConfigLoader:
         return prompts
 
     def load_service_schema(self, service_name: str) -> dict[str, Any] | None:
-        """Load service schema from JSON configuration file.
+        """Load service tool schema from JSON schema file.
 
         Args:
             service_name: Name of the service (without .json extension)
 
         Returns:
-            Service schema dictionary, or empty dict if file doesn't exist or is invalid
+            Service tool schema dictionary, or None if file doesn't exist or is invalid
         """
-        tool_schema_file = self.config_dir / f"services/{service_name}.json"
+        tool_schema_file = self.schema_dir / f"services/{service_name}.json"
         if not tool_schema_file.exists():
             return None
 

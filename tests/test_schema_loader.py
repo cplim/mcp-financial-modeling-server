@@ -1,4 +1,4 @@
-"""Test cases for configuration loader."""
+"""Test cases for schema loader."""
 
 import json
 import tempfile
@@ -6,25 +6,25 @@ from pathlib import Path
 
 from mcp.types import Prompt, Resource
 
-from mcp_financial_modeling_prep.config.loader import ConfigLoader
+from mcp_financial_modeling_prep.schema.loader import SchemaLoader
 
 
-class TestConfigLoader:
-    """Test the configuration loader."""
+class TestSchemaLoader:
+    """Test the schema loader."""
 
-    def test_config_loader_initialization(self):
-        """Test that config loader can be initialized."""
-        loader = ConfigLoader()
-        assert loader.config_dir is not None
+    def test_schema_loader_initialization(self):
+        """Test that schema loader can be initialized."""
+        loader = SchemaLoader()
+        assert loader.schema_dir is not None
 
-    def test_config_loader_with_custom_directory(self):
-        """Test that config loader can be initialized with custom directory."""
-        custom_dir = Path("/tmp/test_config")
-        loader = ConfigLoader(config_dir=custom_dir)
-        assert loader.config_dir == custom_dir
+    def test_schema_loader_with_custom_directory(self):
+        """Test that schema loader can be initialized with custom directory."""
+        custom_dir = Path("/tmp/test_schema")
+        loader = SchemaLoader(config_dir=custom_dir)
+        assert loader.schema_dir == custom_dir
 
     def test_load_resources_with_valid_config(self):
-        """Test loading resources from valid configuration file."""
+        """Test loading resources from valid schema file."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir)
 
@@ -49,7 +49,7 @@ class TestConfigLoader:
             with open(config_dir / "resources.json", "w") as f:
                 json.dump(resources_config, f)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             resources = loader.load_resources()
 
             assert len(resources) == 2
@@ -59,16 +59,16 @@ class TestConfigLoader:
             assert resources[1].mimeType == "application/json"
 
     def test_load_resources_with_missing_config(self):
-        """Test loading resources when config file doesn't exist."""
+        """Test loading resources when schema file doesn't exist."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir)
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             resources = loader.load_resources()
 
             assert resources == []
 
     def test_load_prompts_with_valid_config(self):
-        """Test loading prompts from valid configuration file."""
+        """Test loading prompts from valid schema file."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir)
 
@@ -93,7 +93,7 @@ class TestConfigLoader:
             with open(config_dir / "prompts.json", "w") as f:
                 json.dump(prompts_config, f)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             prompts = loader.load_prompts()
 
             assert len(prompts) == 1
@@ -104,16 +104,16 @@ class TestConfigLoader:
             assert prompts[0].arguments[1].required is False
 
     def test_load_prompts_with_missing_config(self):
-        """Test loading prompts when config file doesn't exist."""
+        """Test loading prompts when schema file doesn't exist."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir)
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             prompts = loader.load_prompts()
 
             assert prompts == []
 
     def test_load_resources_with_empty_config(self):
-        """Test loading resources with empty configuration."""
+        """Test loading resources with empty schema file."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir)
 
@@ -121,13 +121,13 @@ class TestConfigLoader:
             with open(config_dir / "resources.json", "w") as f:
                 json.dump({}, f)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             resources = loader.load_resources()
 
             assert resources == []
 
     def test_load_prompts_with_empty_config(self):
-        """Test loading prompts with empty configuration."""
+        """Test loading prompts with empty schema file."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir)
 
@@ -135,7 +135,7 @@ class TestConfigLoader:
             with open(config_dir / "prompts.json", "w") as f:
                 json.dump({}, f)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             prompts = loader.load_prompts()
 
             assert prompts == []
@@ -159,7 +159,7 @@ class TestConfigLoader:
             with open(config_dir / "resources.json", "w") as f:
                 json.dump(resources_config, f)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             resources = loader.load_resources()
 
             assert len(resources) == 1
@@ -184,7 +184,7 @@ class TestConfigLoader:
             with open(config_dir / "prompts.json", "w") as f:
                 json.dump(prompts_config, f)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             prompts = loader.load_prompts()
 
             assert len(prompts) == 1
@@ -210,7 +210,7 @@ class TestConfigLoader:
             with open(services_dir / "company_profile.json", "w") as f:
                 json.dump(service_schema, f)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             schema = loader.load_service_schema("company_profile")
 
             assert schema == service_schema
@@ -225,7 +225,7 @@ class TestConfigLoader:
             services_dir = config_dir / "services"
             services_dir.mkdir()
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             schema = loader.load_service_schema("nonexistent_service")
 
             assert schema is None
@@ -235,7 +235,7 @@ class TestConfigLoader:
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir)
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             schema = loader.load_service_schema("company_profile")
 
             assert schema is None
@@ -251,7 +251,7 @@ class TestConfigLoader:
             with open(services_dir / "invalid_service.json", "w") as f:
                 f.write("{ invalid json content")
 
-            loader = ConfigLoader(config_dir=config_dir)
+            loader = SchemaLoader(config_dir=config_dir)
             schema = loader.load_service_schema("invalid_service")
 
             assert schema is None

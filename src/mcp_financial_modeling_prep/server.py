@@ -11,8 +11,8 @@ from mcp.server import Server
 from mcp.server.models import InitializationOptions
 from mcp.types import Prompt, Resource, TextContent, Tool
 
-from .config import ConfigLoader
 from .fmp_client import FMPClient
+from .schema import SchemaLoader
 from .services.registry import ServiceRegistry
 
 
@@ -27,11 +27,11 @@ def create_server(api_key: str) -> Server:
     # Initialize FMP client with API key
     fmp_client = FMPClient(api_key=api_key)
 
-    # Initialize configuration loader
-    config_loader = ConfigLoader()
+    # Initialize schema loader
+    schema_loader = SchemaLoader()
 
     # Initialize service registry
-    service_registry = ServiceRegistry(fmp_client, config_loader)
+    service_registry = ServiceRegistry(fmp_client, schema_loader)
 
     @server.list_tools()
     async def handle_list_tools() -> list[Tool]:
@@ -41,12 +41,12 @@ def create_server(api_key: str) -> Server:
     @server.list_resources()
     async def handle_list_resources() -> list[Resource]:
         """List available financial resources."""
-        return config_loader.load_resources()
+        return schema_loader.load_resources()
 
     @server.list_prompts()
     async def handle_list_prompts() -> list[Prompt]:
         """List available financial analysis prompts."""
-        return config_loader.load_prompts()
+        return schema_loader.load_prompts()
 
     @server.call_tool()
     async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:

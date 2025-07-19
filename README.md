@@ -14,9 +14,12 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 - **Financial Ratios**: Comprehensive ratio analysis including liquidity, profitability, and leverage ratios
 - **DCF Valuation**: Discounted cash flow valuation with upside/downside analysis
 - **Technical Indicators**: Technical analysis tools including SMA, EMA, RSI, MACD, and more
-- **Service Architecture**: Clean, maintainable service abstraction pattern for easy extensibility
+- **Enhanced DCF Analysis**: Advanced DCF with levered DCF, scenario modeling, and financial health scoring
+- **Advanced Financial Health**: Altman Z-Score, Piotroski F-Score, and comprehensive financial strength analysis
+- **Schema-Driven Architecture**: JSON-based schema definitions for all services
+- **Service Architecture**: Clean, maintainable service abstraction with explicit dependency injection
 - **Error Handling**: Comprehensive error handling for API failures and invalid inputs
-- **Data Validation**: Input validation and formatted output for all financial data
+- **Data Validation**: Configuration-driven input validation and formatted output for all financial data
 
 ### 🚧 Planned Features
 - **ESG Data**: Environmental, social, and governance ratings
@@ -24,7 +27,7 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 - **Advanced Analysis**: Analyst estimates and earnings forecasts
 
 ### 📋 MCP Resources & Prompts
-- **Configuration-Based**: Resources and prompts are loaded from JSON configuration files
+- **Schema-Based**: Resources and prompts are loaded from JSON configuration files
 - **Resources**: 3 financial analysis templates (configurable)
   - `financial://templates/analysis`: Comprehensive financial analysis templates
   - `financial://templates/report`: Financial report generation templates
@@ -102,6 +105,16 @@ python -m mcp_financial_modeling_prep.server
    - Supports multiple indicators: sma, ema, wma, dema, tema, williams, rsi, adx, standarddeviation
    - Optional date range filtering with from_date and to_date parameters
 
+10. **get_enhanced_dcf_analysis**: Advanced DCF analysis with scenario modeling
+   - Input: `{"symbol": "AAPL", "bull_growth_rate": 0.15, "base_growth_rate": 0.10, "bear_growth_rate": 0.05}`
+   - Returns: Levered DCF calculations with bull/base/bear scenarios and investment thesis
+   - Features: Enterprise value calculations, financial health scoring, color-coded recommendations
+
+11. **get_advanced_financial_health**: Comprehensive financial health assessment
+   - Input: `{"symbol": "AAPL"}`
+   - Returns: Altman Z-Score, Piotroski F-Score, and overall financial strength rating
+   - Features: Bankruptcy prediction, financial strength scoring, trend analysis
+
 ## Development
 
 This project uses Test-Driven Development (TDD) principles.
@@ -171,9 +184,11 @@ uv run black .
 - [x] TDD framework with comprehensive tests
 - [x] MCP server basic structure
 - [x] FMP API client implementation
-- [x] Financial data tools (6 tools implemented)
+- [x] Financial data tools (11 tools implemented)
 - [x] Market data tools (historical prices, indices, trading volume)
 - [x] Financial analysis tools (ratios, DCF valuation, technical indicators)
+- [x] Advanced analysis tools (Enhanced DCF with scenario modeling, Financial Health scoring)
+- [x] Schema-driven architecture with JSON-based service schemas
 - [x] Service abstraction pattern for maintainable architecture
 - [x] Error handling and data validation
 - [x] Code quality checks (black, ruff, mypy)
@@ -186,13 +201,14 @@ uv run black .
 - [ ] Comprehensive documentation
 
 ### 🧪 Test Coverage
-- **Total Tests**: 90 unit tests + 13 integration tests (all passing)
-- **Test Files**: 6 (server, FMP client, financial tools, services, config loader, integration)
+- **Total Tests**: 105 unit tests + 13 integration tests (all passing)
+- **Test Files**: 7 (server, FMP client, financial tools, services, advanced services, config loader, integration)
 - **Coverage**: Comprehensive mocking and integration testing including resources and prompts
 - **Architecture**: Service abstraction pattern with individual service tests
-- **Analysis Tools**: Complete TDD implementation for financial analysis services
+- **Analysis Tools**: Complete TDD implementation for financial analysis services including advanced tools
+- **Advanced Features**: Enhanced DCF with scenario modeling, Financial Health with Altman Z-Score and Piotroski F-Score
 - **Resources & Prompts**: Full test coverage for MCP resources and prompts functionality
-- **Configuration**: Test coverage for configuration-based resource and prompt loading
+- **Configuration**: Test coverage for schema-based resource, prompt, and service schema loading
 - **Technical Indicators**: Enhanced API with enums, timeframes, and date range support
 - **Integration Tests**: Real API validation with FMP endpoints and error handling
 

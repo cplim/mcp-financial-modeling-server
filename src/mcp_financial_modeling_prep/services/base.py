@@ -5,22 +5,22 @@ from typing import Any
 
 from mcp.types import TextContent, Tool
 
-from ..config.loader import ConfigLoader
 from ..fmp_client import FMPClient
+from ..schema.loader import SchemaLoader
 
 
 class BaseFinancialService(ABC):
     """Abstract base class for financial data services."""
 
-    def __init__(self, fmp_client: FMPClient, config_loader: ConfigLoader):
+    def __init__(self, fmp_client: FMPClient, schema_loader: SchemaLoader):
         """Initialize the service with FMP client and config loader.
 
         Args:
             fmp_client: Financial Modeling Prep API client
-            config_loader: Configuration loader for schemas
+            schema_loader: Loads schemas for tools, prompts, and resources
         """
         self.fmp_client = fmp_client
-        self.config_loader = config_loader
+        self.schema_loader = schema_loader
 
     @property
     @abstractmethod
@@ -41,7 +41,7 @@ class BaseFinancialService(ABC):
         Loads schema from configuration file based on service name.
         Raises ValueError if no schema configuration is found.
         """
-        schema = self.config_loader.load_service_schema(self.name)
+        schema = self.schema_loader.load_service_schema(self.name)
         if not schema:
             raise ValueError(f"No schema configuration found for service: {self.name}")
         return schema
