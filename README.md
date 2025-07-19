@@ -40,8 +40,18 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 
 ## Installation
 
+### Native Installation
 ```bash
 uv add mcp-financial-modeling-prep
+```
+
+### Docker Installation (Coming Soon)
+```bash
+# Pull the official Docker image
+docker pull ghcr.io/cplim/mcp-financial-modeling-server:latest
+
+# Run with Docker Compose
+docker-compose up -d
 ```
 
 ## Configuration

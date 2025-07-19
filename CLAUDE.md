@@ -148,7 +148,7 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 - ✅ Configuration-based resources and prompts (JSON files)
 - ✅ Configuration-driven service schemas (JSON files)
 - ✅ Advanced financial analysis tools (Enhanced DCF, Financial Health)
-- 🚧 Docker containerization support (planned)
+- 🚧 Docker containerization support (in progress - Phase 1: Core containerization & local development)
 - 🚧 Additional advanced analysis tools (Sector Analysis, Portfolio Risk, etc.)
 
 **Service Architecture Implementation**:
@@ -225,6 +225,48 @@ To add a new financial analysis service with the schema-driven architecture:
 - Once code has been committed, pushed and passes in CI, merge it back to main
 - All branches should begin with 'feature/' prefix
 - **Remember when renaming files, use 'git mv' rather than 'mv' to preserve history**
+
+## Docker Development & Deployment
+
+### Docker Containerization Plan
+
+The project follows a phased approach to Docker containerization with 12-factor app principles for cloud-native deployment:
+
+#### Phase 1: Core Containerization & Local Development (HIGH PRIORITY)
+1. **Multi-Stage Dockerfile**: Python 3.11 with uv, security hardening, non-root user
+2. **Docker Compose Setup**: Support for local/dev/staging/prod environments with proper volume mounts
+3. **Environment Configuration**: Secrets management, config validation, environment-specific settings
+4. **Logging & Observability**: Structured JSON logging, health checks, request tracing
+
+#### Phase 2: Production Monitoring & CI/CD (MEDIUM PRIORITY)  
+5. **Monitoring & Alerting**: Prometheus metrics, business metrics, graceful shutdown
+6. **CI/CD Pipeline**: Automated Docker builds, multi-arch support, security scanning
+
+#### Phase 3: Cloud-Native & Kubernetes (MEDIUM PRIORITY)
+7. **Kubernetes Manifests**: Deployment, scaling, security policies
+8. **Documentation & Examples**: Comprehensive Docker usage guides and troubleshooting
+
+### Local Development with Docker
+
+Once implemented, local development workflow will be:
+
+```bash
+# Start development environment
+docker-compose -f docker-compose.local.yml up --build
+
+# Run tests in container
+docker-compose -f docker-compose.local.yml exec mcp-server uv run pytest
+
+# View logs
+docker-compose -f docker-compose.local.yml logs -f mcp-server
+```
+
+### MCP-Specific Containerization Considerations
+
+- **stdio Communication**: MCP servers use stdin/stdout, not HTTP endpoints
+- **Health Monitoring**: Custom health checks required (no standard HTTP health endpoint)  
+- **Scaling Strategy**: Different scaling patterns than traditional web services
+- **Container Orchestration**: Requires careful handling of stdio communication in containerized environments
 
 ## API Documentation
 
