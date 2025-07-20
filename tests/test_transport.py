@@ -160,6 +160,147 @@ class TestHttpTransport:
         health_endpoint = transport.health_check_endpoint()
         assert health_endpoint == "/health"
 
+    @pytest.mark.asyncio
+    async def test_http_transport_mcp_post_endpoint(self):
+        """Test MCP POST endpoint validation."""
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
+        from starlette.testclient import TestClient
+        from starlette.applications import Starlette
+        from starlette.routing import Route
+
+        transport = HttpTransport()
+        
+        # Create test app with MCP endpoint
+        app = Starlette(routes=[
+            Route("/mcp", endpoint=transport._handle_mcp, methods=["POST", "GET"]),
+        ])
+        
+        client = TestClient(app)
+        
+        # Test POST request with MCP headers
+        response = client.post("/mcp", 
+            json={"jsonrpc": "2.0", "method": "initialize", "id": 1, "params": {}},
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json, text/event-stream",
+                "MCP-Protocol-Version": "2025-06-18"
+            }
+        )
+        
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "application/json"
+
+    @pytest.mark.asyncio
+    async def test_http_transport_mcp_get_endpoint(self):
+        """Test MCP GET endpoint for SSE streaming."""
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
+        from starlette.testclient import TestClient
+        from starlette.applications import Starlette
+        from starlette.routing import Route
+
+        transport = HttpTransport()
+        
+        # Create test app with MCP endpoint
+        app = Starlette(routes=[
+            Route("/mcp", endpoint=transport._handle_mcp, methods=["POST", "GET"]),
+        ])
+        
+        client = TestClient(app)
+        
+        # Test GET request for SSE stream
+        response = client.get("/mcp",
+            headers={
+                "Accept": "text/event-stream",
+                "MCP-Protocol-Version": "2025-06-18"
+            }
+        )
+        
+        assert response.status_code == 200
+        assert "text/event-stream" in response.headers.get("content-type", "")
+
+    @pytest.mark.asyncio
+    async def test_http_transport_mcp_missing_protocol_header(self):
+        """Test MCP endpoint validation for missing protocol header."""
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
+        from starlette.testclient import TestClient
+        from starlette.applications import Starlette
+        from starlette.routing import Route
+
+        transport = HttpTransport()
+        
+        # Create test app with MCP endpoint
+        app = Starlette(routes=[
+            Route("/mcp", endpoint=transport._handle_mcp, methods=["POST", "GET"]),
+        ])
+        
+        client = TestClient(app)
+        
+        # Test POST request without MCP-Protocol-Version header
+        response = client.post("/mcp", 
+            json={"jsonrpc": "2.0", "method": "initialize", "id": 1, "params": {}},
+            headers={"Content-Type": "application/json"}
+        )
+        
+        assert response.status_code == 400
+        assert "Missing MCP-Protocol-Version header" in response.json()["error"]
+
+    @pytest.mark.asyncio
+    async def test_http_transport_mcp_invalid_json(self):
+        """Test MCP POST endpoint with invalid JSON."""
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
+        from starlette.testclient import TestClient
+        from starlette.applications import Starlette
+        from starlette.routing import Route
+
+        transport = HttpTransport()
+        
+        # Create test app with MCP endpoint
+        app = Starlette(routes=[
+            Route("/mcp", endpoint=transport._handle_mcp, methods=["POST", "GET"]),
+        ])
+        
+        client = TestClient(app)
+        
+        # Test POST request with invalid JSON
+        response = client.post("/mcp", 
+            content="invalid json",
+            headers={
+                "Content-Type": "application/json",
+                "MCP-Protocol-Version": "2025-06-18"
+            }
+        )
+        
+        assert response.status_code == 400
+        assert "Invalid JSON payload" in response.json()["error"]
+
+    @pytest.mark.asyncio
+    async def test_http_transport_mcp_get_missing_accept_header(self):
+        """Test MCP GET endpoint without proper Accept header."""
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
+        from starlette.testclient import TestClient
+        from starlette.applications import Starlette
+        from starlette.routing import Route
+
+        transport = HttpTransport()
+        
+        # Create test app with MCP endpoint
+        app = Starlette(routes=[
+            Route("/mcp", endpoint=transport._handle_mcp, methods=["POST", "GET"]),
+        ])
+        
+        client = TestClient(app)
+        
+        # Test GET request without text/event-stream in Accept header
+        response = client.get("/mcp",
+            headers={
+                "Accept": "application/json",
+                "MCP-Protocol-Version": "2025-06-18"
+            }
+        )
+        
+        assert response.status_code == 400
+        assert "Accept header must include text/event-stream" in response.json()["error"]
+
 
 class TestTransportIntegration:
     """Test transport integration with MCP server."""

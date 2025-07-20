@@ -90,4 +90,5 @@ dev = [
     "black>=25.1.0",
     "ruff>=0.12.3",
     "mypy>=1.16.1",
+    "httpx>=0.24.0",  # For TestClient support
 ]
