@@ -1,5 +1,8 @@
 # MCP Financial Modeling Prep Server
 
+[![CI/CD Pipeline](https://github.com/cplim/cc-python-mcp-fcp/actions/workflows/ci.yml/badge.svg)](https://github.com/cplim/cc-python-mcp-fcp/actions/workflows/ci.yml)
+[![Docker Build](https://github.com/cplim/cc-python-mcp-fcp/actions/workflows/docker.yml/badge.svg)](https://github.com/cplim/cc-python-mcp-fcp/actions/workflows/docker.yml)
+
 A Model Context Protocol (MCP) server that provides tools, resources, and prompts for financial analysis using the Financial Modeling Prep API.
 
 ## Features
@@ -45,17 +48,39 @@ A Model Context Protocol (MCP) server that provides tools, resources, and prompt
 uv add mcp-financial-modeling-prep
 ```
 
-### Docker Installation (Coming Soon)
+### Docker Installation
+
+#### Option 1: Use Pre-built Images (Recommended)
 ```bash
-# Pull the official Docker image
-docker pull ghcr.io/cplim/mcp-financial-modeling-server:latest
+# Pull from GitHub Container Registry
+docker pull ghcr.io/cplim/cc-python-mcp-fcp:latest
 
-# Run with HTTP transport (recommended for containers)
-docker run -p 8000:8000 -e FMP_API_KEY=your_key_here mcp-financial:latest
+# Run with environment variable (recommended)
+docker run -e FMP_API_KEY=your_api_key_here -p 8000:8000 ghcr.io/cplim/cc-python-mcp-fcp:latest
 
-# Run with Docker Compose
-docker-compose up -d
+# Test the server
+curl http://localhost:8000/health
 ```
+
+#### Option 2: Build Locally
+```bash
+# Build the Docker image locally
+docker build -t mcp-financial .
+
+# Run with environment variable (recommended)
+docker run -e FMP_API_KEY=your_api_key_here -p 8000:8000 mcp-financial
+
+# Or run with bind-mounted .env file
+echo "FMP_API_KEY=your_api_key_here" > .env
+docker run -v $(pwd)/.env:/app/.env -p 8000:8000 mcp-financial
+```
+
+**Available tags:**
+- `latest` - Latest development build from main branch
+- `v1.0.0` - Specific version releases
+- `develop` - Development branch builds
+
+See [docker-local-usage.md](docker-local-usage.md) for detailed Docker usage examples and transport options.
 
 ## Configuration
 
@@ -95,7 +120,7 @@ curl http://localhost:8000/info
 ### Docker Usage
 ```bash
 # Run with HTTP transport (recommended for containers)
-docker run -p 8000:8000 -e FMP_API_KEY=your_key_here mcp-financial:latest
+docker run -p 8000:8000 -e FMP_API_KEY=your_key_here ghcr.io/cplim/cc-python-mcp-fcp:latest
 
 # Health check
 curl http://localhost:8000/health
@@ -218,8 +243,10 @@ uv run black .
 - [x] Project setup with uv package manager
 - [x] Git repository with GitHub integration
 - [x] CI/CD pipeline with GitHub Actions
+- [x] Docker containerization with multi-arch builds
+- [x] GitHub Container Registry (GHCR) integration
 - [x] TDD framework with comprehensive tests
-- [x] MCP server basic structure
+- [x] MCP server with dual transport support (stdio + HTTP)
 - [x] FMP API client implementation
 - [x] Financial data tools (11 tools implemented)
 - [x] Market data tools (historical prices, indices, trading volume)
@@ -229,13 +256,15 @@ uv run black .
 - [x] Service abstraction pattern for maintainable architecture
 - [x] Error handling and data validation
 - [x] Code quality checks (black, ruff, mypy)
+- [x] Security improvements (localhost binding, vulnerability scanning)
 
 ### 🚧 In Progress
 - [ ] Re-enable 80% code coverage requirement in CI
 
 ### 📋 Planned
-- [ ] Docker containerization
-- [ ] Comprehensive documentation
+- [ ] Docker Compose for multi-environment deployment
+- [ ] Production security enhancements (Origin validation, authentication)
+- [ ] Comprehensive production documentation
 
 ### 🧪 Test Coverage
 - **Total Tests**: 105 unit tests + 13 integration tests (all passing)

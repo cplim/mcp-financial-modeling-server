@@ -187,16 +187,16 @@ class TestServerTransportSupport:
                     mock_create_transport.assert_called_once_with("http", host="127.0.0.1", port=9000)
                     mock_transport.run.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_main_missing_api_key_exits(self):
+    def test_main_missing_api_key_exits(self):
         """Test that main function exits when FMP_API_KEY is missing."""
         from mcp_financial_modeling_prep.server import main
         from unittest.mock import patch
         import os
         import pytest
+        import asyncio
         
         # Remove FMP_API_KEY from environment
         with patch.dict(os.environ, {}, clear=True):
             with patch('sys.argv', ['server.py']):
                 with pytest.raises(SystemExit):
-                    await main()
+                    asyncio.run(main())
