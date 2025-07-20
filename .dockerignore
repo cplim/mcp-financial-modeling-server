@@ -48,11 +48,11 @@ coverage.xml
 # Git
 .git/
 .gitignore
-README.md
 
-# Documentation
+# Documentation (but keep README.md for pyproject.toml)
 docs/
 *.md
+!README.md
 
 # CI/CD
 .github/
