@@ -1,19 +1,19 @@
 """MCP server implementation for Financial Modeling Prep API."""
 
+import argparse
 import asyncio
 import os
 import sys
 from pathlib import Path
 
-import mcp.server.stdio
 from dotenv import load_dotenv
 from mcp.server import Server
-from mcp.server.models import InitializationOptions
 from mcp.types import Prompt, Resource, TextContent, Tool
 
 from .fmp_client import FMPClient
 from .schema import SchemaLoader
 from .services.registry import ServiceRegistry
+from .transport import create_transport
 
 
 def create_server(api_key: str) -> Server:
@@ -56,8 +56,36 @@ def create_server(api_key: str) -> Server:
     return server
 
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="MCP Financial Modeling Prep Server"
+    )
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "http"],
+        default="stdio",
+        help="Transport protocol to use (default: stdio)"
+    )
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Host to bind to for HTTP transport (default: 127.0.0.1 for security)"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to bind to for HTTP transport (default: 8000)"
+    )
+    return parser.parse_args()
+
+
 async def main():
     """Main entry point for the server."""
+    # Parse command line arguments
+    args = parse_args()
+    
     # Load environment variables from .env file if it exists
     env_file = Path.cwd() / ".env"
     if env_file.exists():
@@ -70,21 +98,21 @@ async def main():
         print("Create a .env file with FMP_API_KEY=your_api_key_here", file=sys.stderr)
         sys.exit(1)
 
+    # Create MCP server
     server = create_server(api_key)
-
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="financial-modeling-prep",
-                server_version="0.1.0",
-                capabilities=server.get_capabilities(
-                    notification_options=None,
-                    experimental_capabilities=None,
-                ),
-            ),
-        )
+    
+    # Create transport based on command line arguments
+    if args.transport == "stdio":
+        transport = create_transport("stdio")
+        print("Starting MCP server with stdio transport...", file=sys.stderr)
+    elif args.transport == "http":
+        transport = create_transport("http", host=args.host, port=args.port)
+        print(f"Starting MCP server with HTTP transport on {args.host}:{args.port}...", file=sys.stderr)
+        print(f"Health check: http://{args.host}:{args.port}/health", file=sys.stderr)
+        print(f"MCP endpoint: http://{args.host}:{args.port}/mcp", file=sys.stderr)
+    
+    # Run server with selected transport
+    await transport.run(server)
 
 
 if __name__ == "__main__":

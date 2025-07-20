@@ -45,6 +45,7 @@ dev = [
 
 [project.scripts]
 mcp-financial-modeling-prep = "mcp_financial_modeling_prep.server:main"
+mcp-financial-prep = "mcp_financial_modeling_prep.server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mcp_financial_modeling_prep"]

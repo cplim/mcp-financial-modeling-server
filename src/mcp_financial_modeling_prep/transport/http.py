@@ -16,7 +16,7 @@ from . import TransportInterface
 class HttpTransport(TransportInterface):
     """Streamable HTTP transport for containerized/network usage."""
     
-    def __init__(self, host: str = "0.0.0.0", port: int = 8000):
+    def __init__(self, host: str = "127.0.0.1", port: int = 8000):
         """Initialize HTTP transport.
         
         Args:

@@ -128,7 +128,7 @@ class TestHttpTransport:
         transport = HttpTransport()
         transport_info = transport.get_transport_info()
         
-        assert transport_info["host"] == "0.0.0.0"
+        assert transport_info["host"] == "127.0.0.1"
         assert transport_info["port"] == 8000
 
     @pytest.mark.asyncio
