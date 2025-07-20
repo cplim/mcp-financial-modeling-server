@@ -261,12 +261,45 @@ docker-compose -f docker-compose.local.yml exec mcp-server uv run pytest
 docker-compose -f docker-compose.local.yml logs -f mcp-server
 ```
 
-### MCP-Specific Containerization Considerations
+### Dual Transport Architecture
 
-- **stdio Communication**: MCP servers use stdin/stdout, not HTTP endpoints
-- **Health Monitoring**: Custom health checks required (no standard HTTP health endpoint)  
-- **Scaling Strategy**: Different scaling patterns than traditional web services
-- **Container Orchestration**: Requires careful handling of stdio communication in containerized environments
+The project implements a **dual transport architecture** supporting both stdio and streamable HTTP protocols:
+
+#### Transport Support Strategy
+- **stdio Transport**: For subprocess usage (MCP client launches server as subprocess)
+- **Streamable HTTP Transport**: For containerized/network deployment (latest MCP spec, replaces deprecated SSE)
+- **Transport Abstraction Layer**: Clean separation between business logic and transport protocols
+- **Flexible Entry Point**: Select transport via command-line arguments
+
+#### Implementation Structure
+```
+src/mcp_financial_modeling_prep/
+├── server.py              # Unified entry point with transport selection
+├── transport/
+│   ├── __init__.py        # TransportInterface ABC
+│   ├── stdio.py           # Stdio transport implementation  
+│   └── http.py            # Streamable HTTP transport implementation
+└── services/              # Business logic (transport-agnostic)
+```
+
+#### Usage Examples
+```bash
+# Stdio transport (subprocess usage)
+python -m mcp_financial_modeling_prep.server --transport stdio
+
+# HTTP transport (container/network usage)
+python -m mcp_financial_modeling_prep.server --transport http --port 8000
+
+# Docker deployment
+docker run -p 8000:8000 -e FMP_API_KEY=xxx mcp-financial:latest
+```
+
+#### Docker Benefits with HTTP Transport
+- **Standard Health Checks**: `GET /health` endpoint  
+- **Service Discovery**: HTTP-based networking
+- **Load Balancing**: Multiple container instances
+- **Monitoring**: Standard HTTP metrics and logging
+- **Production Ready**: Aligns with MCP Streamable HTTP specification
 
 ## API Documentation
 

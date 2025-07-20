@@ -50,6 +50,9 @@ uv add mcp-financial-modeling-prep
 # Pull the official Docker image
 docker pull ghcr.io/cplim/mcp-financial-modeling-server:latest
 
+# Run with HTTP transport (recommended for containers)
+docker run -p 8000:8000 -e FMP_API_KEY=your_key_here mcp-financial:latest
+
 # Run with Docker Compose
 docker-compose up -d
 ```
@@ -64,14 +67,38 @@ export FMP_API_KEY="your_api_key_here"
 
 ## Usage
 
-Run the MCP server:
+The MCP server supports **dual transport protocols** for different deployment scenarios:
 
+### Stdio Transport (Default - for subprocess usage)
 ```bash
 # Make sure you have the FMP_API_KEY environment variable set
 export FMP_API_KEY="your_api_key_here"
 
-# Run the server
+# Run with stdio transport (default)
+python -m mcp_financial_modeling_prep.server --transport stdio
+# or simply
 python -m mcp_financial_modeling_prep.server
+```
+
+### HTTP Transport (for containerized/network deployment)
+```bash
+# Run with HTTP transport on port 8000
+python -m mcp_financial_modeling_prep.server --transport http --port 8000
+
+# Access health check
+curl http://localhost:8000/health
+
+# Access server info
+curl http://localhost:8000/info
+```
+
+### Docker Usage
+```bash
+# Run with HTTP transport (recommended for containers)
+docker run -p 8000:8000 -e FMP_API_KEY=your_key_here mcp-financial:latest
+
+# Health check
+curl http://localhost:8000/health
 ```
 
 ### Available Tools
