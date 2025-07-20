@@ -1,7 +1,7 @@
 """Transport abstraction layer for MCP server."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from mcp.server import Server
 
@@ -19,7 +19,7 @@ class TransportInterface(ABC):
         pass
 
     @abstractmethod
-    def get_transport_info(self) -> Dict[str, Any]:
+    def get_transport_info(self) -> dict[str, Any]:
         """Return transport-specific information.
 
         Returns:

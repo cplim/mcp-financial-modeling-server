@@ -1,8 +1,8 @@
 """Test cases for transport abstraction layer."""
 
-import pytest
 from unittest.mock import AsyncMock, Mock
 
+import pytest
 from mcp.server import Server
 
 
@@ -81,8 +81,9 @@ class TestStdioTransport:
     @pytest.mark.asyncio
     async def test_stdio_transport_run_calls_server(self, mock_server):
         """Test that stdio transport properly runs the server."""
+        from unittest.mock import patch
+
         from mcp_financial_modeling_prep.transport.stdio import StdioTransport
-        from unittest.mock import patch, AsyncMock
 
         transport = StdioTransport()
 
@@ -136,8 +137,9 @@ class TestHttpTransport:
     @pytest.mark.asyncio
     async def test_http_transport_run_starts_server(self, mock_server):
         """Test that HTTP transport starts the HTTP server."""
+        from unittest.mock import patch
+
         from mcp_financial_modeling_prep.transport.http import HttpTransport
-        from unittest.mock import patch, AsyncMock
 
         transport = HttpTransport(host="127.0.0.1", port=8001)
 
@@ -165,10 +167,11 @@ class TestHttpTransport:
     @pytest.mark.asyncio
     async def test_http_transport_mcp_post_endpoint(self):
         """Test MCP POST endpoint validation."""
-        from mcp_financial_modeling_prep.transport.http import HttpTransport
-        from starlette.testclient import TestClient
         from starlette.applications import Starlette
         from starlette.routing import Route
+        from starlette.testclient import TestClient
+
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
 
         transport = HttpTransport()
 
@@ -198,10 +201,11 @@ class TestHttpTransport:
     @pytest.mark.asyncio
     async def test_http_transport_mcp_get_endpoint(self):
         """Test MCP GET endpoint for SSE streaming."""
-        from mcp_financial_modeling_prep.transport.http import HttpTransport
-        from starlette.testclient import TestClient
         from starlette.applications import Starlette
         from starlette.routing import Route
+        from starlette.testclient import TestClient
+
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
 
         transport = HttpTransport()
 
@@ -225,10 +229,11 @@ class TestHttpTransport:
     @pytest.mark.asyncio
     async def test_http_transport_mcp_missing_protocol_header(self):
         """Test MCP endpoint validation for missing protocol header."""
-        from mcp_financial_modeling_prep.transport.http import HttpTransport
-        from starlette.testclient import TestClient
         from starlette.applications import Starlette
         from starlette.routing import Route
+        from starlette.testclient import TestClient
+
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
 
         transport = HttpTransport()
 
@@ -254,10 +259,11 @@ class TestHttpTransport:
     @pytest.mark.asyncio
     async def test_http_transport_mcp_invalid_json(self):
         """Test MCP POST endpoint with invalid JSON."""
-        from mcp_financial_modeling_prep.transport.http import HttpTransport
-        from starlette.testclient import TestClient
         from starlette.applications import Starlette
         from starlette.routing import Route
+        from starlette.testclient import TestClient
+
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
 
         transport = HttpTransport()
 
@@ -283,10 +289,11 @@ class TestHttpTransport:
     @pytest.mark.asyncio
     async def test_http_transport_mcp_get_missing_accept_header(self):
         """Test MCP GET endpoint without proper Accept header."""
-        from mcp_financial_modeling_prep.transport.http import HttpTransport
-        from starlette.testclient import TestClient
         from starlette.applications import Starlette
         from starlette.routing import Route
+        from starlette.testclient import TestClient
+
+        from mcp_financial_modeling_prep.transport.http import HttpTransport
 
         transport = HttpTransport()
 

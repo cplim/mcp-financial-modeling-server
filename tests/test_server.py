@@ -101,8 +101,9 @@ class TestServerTransportSupport:
 
     def test_parse_args_default_stdio(self):
         """Test that default arguments select stdio transport."""
-        from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
+
+        from mcp_financial_modeling_prep.server import parse_args
 
         with patch("sys.argv", ["server.py"]):
             args = parse_args()
@@ -110,8 +111,9 @@ class TestServerTransportSupport:
 
     def test_parse_args_stdio_transport(self):
         """Test that stdio transport can be explicitly selected."""
-        from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
+
+        from mcp_financial_modeling_prep.server import parse_args
 
         with patch("sys.argv", ["server.py", "--transport", "stdio"]):
             args = parse_args()
@@ -119,8 +121,9 @@ class TestServerTransportSupport:
 
     def test_parse_args_http_transport(self):
         """Test that HTTP transport can be selected."""
-        from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
+
+        from mcp_financial_modeling_prep.server import parse_args
 
         with patch("sys.argv", ["server.py", "--transport", "http"]):
             args = parse_args()
@@ -130,8 +133,9 @@ class TestServerTransportSupport:
 
     def test_parse_args_http_with_custom_host_port(self):
         """Test that HTTP transport accepts custom host and port."""
-        from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
+
+        from mcp_financial_modeling_prep.server import parse_args
 
         with patch(
             "sys.argv",
@@ -144,9 +148,11 @@ class TestServerTransportSupport:
 
     def test_parse_args_invalid_transport_raises_error(self):
         """Test that invalid transport choice raises error."""
-        from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
+
         import pytest
+
+        from mcp_financial_modeling_prep.server import parse_args
 
         with patch("sys.argv", ["server.py", "--transport", "invalid"]):
             with pytest.raises(SystemExit):
@@ -155,9 +161,10 @@ class TestServerTransportSupport:
     @pytest.mark.asyncio
     async def test_main_with_stdio_transport(self):
         """Test main function with stdio transport."""
-        from mcp_financial_modeling_prep.server import main
-        from unittest.mock import patch, AsyncMock, MagicMock
         import os
+        from unittest.mock import AsyncMock, patch
+
+        from mcp_financial_modeling_prep.server import main
 
         # Mock environment variable
         with patch.dict(os.environ, {"FMP_API_KEY": "test_key"}):
@@ -176,9 +183,10 @@ class TestServerTransportSupport:
     @pytest.mark.asyncio
     async def test_main_with_http_transport(self):
         """Test main function with HTTP transport."""
-        from mcp_financial_modeling_prep.server import main
-        from unittest.mock import patch, AsyncMock, MagicMock
         import os
+        from unittest.mock import AsyncMock, patch
+
+        from mcp_financial_modeling_prep.server import main
 
         # Mock environment variable
         with patch.dict(os.environ, {"FMP_API_KEY": "test_key"}):
@@ -201,11 +209,13 @@ class TestServerTransportSupport:
 
     def test_main_missing_api_key_exits(self):
         """Test that main function exits when FMP_API_KEY is missing."""
-        from mcp_financial_modeling_prep.server import main
-        from unittest.mock import patch
-        import os
-        import pytest
         import asyncio
+        import os
+        from unittest.mock import patch
+
+        import pytest
+
+        from mcp_financial_modeling_prep.server import main
 
         # Remove FMP_API_KEY from environment
         with patch.dict(os.environ, {}, clear=True):
