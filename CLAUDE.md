@@ -148,7 +148,10 @@ The server expects `FMP_API_KEY` environment variable for Financial Modeling Pre
 - ✅ Configuration-based resources and prompts (JSON files)
 - ✅ Configuration-driven service schemas (JSON files)
 - ✅ Advanced financial analysis tools (Enhanced DCF, Financial Health)
-- 🚧 Docker containerization support (in progress - Phase 1: Core containerization & local development)
+- ✅ Docker containerization with dual transport support (stdio + HTTP)
+- ✅ GitHub Container Registry (GHCR) integration with automated publishing
+- ✅ Multi-architecture Docker builds (linux/amd64, linux/arm64)
+- ✅ Security-hardened containerization (vulnerability scanning, non-root user)
 - 🚧 Additional advanced analysis tools (Sector Analysis, Portfolio Risk, etc.)
 
 **Service Architecture Implementation**:
@@ -232,24 +235,44 @@ To add a new financial analysis service with the schema-driven architecture:
 
 The project follows a phased approach to Docker containerization with 12-factor app principles for cloud-native deployment:
 
-#### Phase 1: Core Containerization & Local Development (HIGH PRIORITY)
-1. **Multi-Stage Dockerfile**: Python 3.11 with uv, security hardening, non-root user
-2. **Docker Compose Setup**: Support for local/dev/staging/prod environments with proper volume mounts
-3. **Environment Configuration**: Secrets management, config validation, environment-specific settings
-4. **Logging & Observability**: Structured JSON logging, health checks, request tracing
+#### Phase 1: Core Containerization & Local Development (✅ COMPLETED)
+1. ✅ **Multi-Stage Dockerfile**: Python 3.11 with uv, security hardening, non-root user
+2. ✅ **Dual Transport Support**: Stdio and HTTP transports with clean abstraction layer
+3. ✅ **CI/CD Pipeline**: Automated Docker builds, multi-arch support, security scanning
+4. ✅ **GHCR Publishing**: Automated publishing to GitHub Container Registry
+5. ✅ **Security Hardening**: Vulnerability scanning, localhost binding, non-root user
+6. ✅ **Health Checks**: HTTP endpoints for monitoring and service discovery
 
-#### Phase 2: Production Monitoring & CI/CD (MEDIUM PRIORITY)  
-5. **Monitoring & Alerting**: Prometheus metrics, business metrics, graceful shutdown
-6. **CI/CD Pipeline**: Automated Docker builds, multi-arch support, security scanning
+#### Phase 2: Production Environment Setup (HIGH PRIORITY)  
+7. **Docker Compose Setup**: Support for local/dev/staging/prod environments with proper volume mounts
+8. **Environment Configuration**: Enhanced secrets management, config validation, environment-specific settings
+9. **Logging & Observability**: Structured JSON logging, request tracing
+10. **Monitoring & Alerting**: Prometheus metrics, business metrics, graceful shutdown
 
 #### Phase 3: Cloud-Native & Kubernetes (MEDIUM PRIORITY)
-7. **Kubernetes Manifests**: Deployment, scaling, security policies
-8. **Documentation & Examples**: Comprehensive Docker usage guides and troubleshooting
+11. **Kubernetes Manifests**: Deployment, scaling, security policies
+12. **Production Security**: Origin validation, authentication, secure CORS
+13. **Advanced Documentation**: Comprehensive production deployment guides
 
 ### Local Development with Docker
 
-Once implemented, local development workflow will be:
+Current Docker development workflow:
 
+```bash
+# Build and run locally
+docker build -t mcp-financial .
+docker run -e FMP_API_KEY=your_key_here -p 8000:8000 mcp-financial
+
+# Or use pre-built image from GHCR
+docker pull ghcr.io/cplim/cc-python-mcp-fcp:latest
+docker run -e FMP_API_KEY=your_key_here -p 8000:8000 ghcr.io/cplim/cc-python-mcp-fcp:latest
+
+# Test the server
+curl http://localhost:8000/health
+curl http://localhost:8000/info
+```
+
+Future Docker Compose workflow (Phase 2):
 ```bash
 # Start development environment
 docker-compose -f docker-compose.local.yml up --build

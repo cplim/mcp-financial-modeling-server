@@ -76,9 +76,9 @@ docker run -v $(pwd)/.env:/app/.env -p 8000:8000 mcp-financial
 ```
 
 **Available tags:**
-- `latest` - Latest development build from main branch
-- `v1.0.0` - Specific version releases
-- `develop` - Development branch builds
+- `latest` - Latest stable build from main branch
+- `v1.0.0` - Specific version releases (coming soon)
+- `feature-*` - Feature branch builds (for testing)
 
 See [docker-local-usage.md](docker-local-usage.md) for detailed Docker usage examples and transport options.
 
@@ -262,13 +262,14 @@ uv run black .
 - [ ] Re-enable 80% code coverage requirement in CI
 
 ### 📋 Planned
-- [ ] Docker Compose for multi-environment deployment
+- [ ] Docker Compose for multi-environment deployment  
 - [ ] Production security enhancements (Origin validation, authentication)
-- [ ] Comprehensive production documentation
+- [ ] Additional advanced analysis tools (Sector Analysis, Portfolio Risk)
+- [ ] Kubernetes deployment manifests
 
 ### 🧪 Test Coverage
-- **Total Tests**: 105 unit tests + 13 integration tests (all passing)
-- **Test Files**: 7 (server, FMP client, financial tools, services, advanced services, config loader, integration)
+- **Total Tests**: 123 unit tests + 13 integration tests (all passing)
+- **Test Files**: 8 (server, FMP client, financial tools, services, advanced services, schema loader, transport, integration)
 - **Coverage**: Comprehensive mocking and integration testing including resources and prompts
 - **Architecture**: Service abstraction pattern with individual service tests
 - **Analysis Tools**: Complete TDD implementation for financial analysis services including advanced tools
