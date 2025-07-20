@@ -58,25 +58,20 @@ def create_server(api_key: str) -> Server:
 
 def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="MCP Financial Modeling Prep Server"
-    )
+    parser = argparse.ArgumentParser(description="MCP Financial Modeling Prep Server")
     parser.add_argument(
         "--transport",
         choices=["stdio", "http"],
         default="stdio",
-        help="Transport protocol to use (default: stdio)"
+        help="Transport protocol to use (default: stdio)",
     )
     parser.add_argument(
         "--host",
         default="127.0.0.1",
-        help="Host to bind to for HTTP transport (default: 127.0.0.1 for security)"
+        help="Host to bind to for HTTP transport (default: 127.0.0.1 for security)",
     )
     parser.add_argument(
-        "--port",
-        type=int,
-        default=8000,
-        help="Port to bind to for HTTP transport (default: 8000)"
+        "--port", type=int, default=8000, help="Port to bind to for HTTP transport (default: 8000)"
     )
     return parser.parse_args()
 
@@ -85,7 +80,7 @@ async def main():
     """Main entry point for the server."""
     # Parse command line arguments
     args = parse_args()
-    
+
     # Load environment variables from .env file if it exists
     env_file = Path.cwd() / ".env"
     if env_file.exists():
@@ -100,17 +95,20 @@ async def main():
 
     # Create MCP server
     server = create_server(api_key)
-    
+
     # Create transport based on command line arguments
     if args.transport == "stdio":
         transport = create_transport("stdio")
         print("Starting MCP server with stdio transport...", file=sys.stderr)
     elif args.transport == "http":
         transport = create_transport("http", host=args.host, port=args.port)
-        print(f"Starting MCP server with HTTP transport on {args.host}:{args.port}...", file=sys.stderr)
+        print(
+            f"Starting MCP server with HTTP transport on {args.host}:{args.port}...",
+            file=sys.stderr,
+        )
         print(f"Health check: http://{args.host}:{args.port}/health", file=sys.stderr)
         print(f"MCP endpoint: http://{args.host}:{args.port}/mcp", file=sys.stderr)
-    
+
     # Run server with selected transport
     await transport.run(server)
 

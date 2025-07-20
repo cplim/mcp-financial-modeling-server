@@ -103,8 +103,8 @@ class TestServerTransportSupport:
         """Test that default arguments select stdio transport."""
         from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
-        
-        with patch('sys.argv', ['server.py']):
+
+        with patch("sys.argv", ["server.py"]):
             args = parse_args()
             assert args.transport == "stdio"
 
@@ -112,8 +112,8 @@ class TestServerTransportSupport:
         """Test that stdio transport can be explicitly selected."""
         from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
-        
-        with patch('sys.argv', ['server.py', '--transport', 'stdio']):
+
+        with patch("sys.argv", ["server.py", "--transport", "stdio"]):
             args = parse_args()
             assert args.transport == "stdio"
 
@@ -121,8 +121,8 @@ class TestServerTransportSupport:
         """Test that HTTP transport can be selected."""
         from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
-        
-        with patch('sys.argv', ['server.py', '--transport', 'http']):
+
+        with patch("sys.argv", ["server.py", "--transport", "http"]):
             args = parse_args()
             assert args.transport == "http"
             assert args.host == "127.0.0.1"
@@ -132,8 +132,11 @@ class TestServerTransportSupport:
         """Test that HTTP transport accepts custom host and port."""
         from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
-        
-        with patch('sys.argv', ['server.py', '--transport', 'http', '--host', '127.0.0.1', '--port', '9000']):
+
+        with patch(
+            "sys.argv",
+            ["server.py", "--transport", "http", "--host", "127.0.0.1", "--port", "9000"],
+        ):
             args = parse_args()
             assert args.transport == "http"
             assert args.host == "127.0.0.1"
@@ -144,8 +147,8 @@ class TestServerTransportSupport:
         from mcp_financial_modeling_prep.server import parse_args
         from unittest.mock import patch
         import pytest
-        
-        with patch('sys.argv', ['server.py', '--transport', 'invalid']):
+
+        with patch("sys.argv", ["server.py", "--transport", "invalid"]):
             with pytest.raises(SystemExit):
                 parse_args()
 
@@ -155,16 +158,18 @@ class TestServerTransportSupport:
         from mcp_financial_modeling_prep.server import main
         from unittest.mock import patch, AsyncMock, MagicMock
         import os
-        
+
         # Mock environment variable
-        with patch.dict(os.environ, {'FMP_API_KEY': 'test_key'}):
-            with patch('sys.argv', ['server.py', '--transport', 'stdio']):
-                with patch('mcp_financial_modeling_prep.server.create_transport') as mock_create_transport:
+        with patch.dict(os.environ, {"FMP_API_KEY": "test_key"}):
+            with patch("sys.argv", ["server.py", "--transport", "stdio"]):
+                with patch(
+                    "mcp_financial_modeling_prep.server.create_transport"
+                ) as mock_create_transport:
                     mock_transport = AsyncMock()
                     mock_create_transport.return_value = mock_transport
-                    
+
                     await main()
-                    
+
                     mock_create_transport.assert_called_once_with("stdio")
                     mock_transport.run.assert_called_once()
 
@@ -174,17 +179,24 @@ class TestServerTransportSupport:
         from mcp_financial_modeling_prep.server import main
         from unittest.mock import patch, AsyncMock, MagicMock
         import os
-        
+
         # Mock environment variable
-        with patch.dict(os.environ, {'FMP_API_KEY': 'test_key'}):
-            with patch('sys.argv', ['server.py', '--transport', 'http', '--host', '127.0.0.1', '--port', '9000']):
-                with patch('mcp_financial_modeling_prep.server.create_transport') as mock_create_transport:
+        with patch.dict(os.environ, {"FMP_API_KEY": "test_key"}):
+            with patch(
+                "sys.argv",
+                ["server.py", "--transport", "http", "--host", "127.0.0.1", "--port", "9000"],
+            ):
+                with patch(
+                    "mcp_financial_modeling_prep.server.create_transport"
+                ) as mock_create_transport:
                     mock_transport = AsyncMock()
                     mock_create_transport.return_value = mock_transport
-                    
+
                     await main()
-                    
-                    mock_create_transport.assert_called_once_with("http", host="127.0.0.1", port=9000)
+
+                    mock_create_transport.assert_called_once_with(
+                        "http", host="127.0.0.1", port=9000
+                    )
                     mock_transport.run.assert_called_once()
 
     def test_main_missing_api_key_exits(self):
@@ -194,9 +206,9 @@ class TestServerTransportSupport:
         import os
         import pytest
         import asyncio
-        
+
         # Remove FMP_API_KEY from environment
         with patch.dict(os.environ, {}, clear=True):
-            with patch('sys.argv', ['server.py']):
+            with patch("sys.argv", ["server.py"]):
                 with pytest.raises(SystemExit):
                     asyncio.run(main())

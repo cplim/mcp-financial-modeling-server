@@ -8,10 +8,10 @@ from . import TransportInterface
 
 class StdioTransport(TransportInterface):
     """Stdio transport for subprocess usage."""
-    
+
     async def run(self, server):
         """Run the server using stdio transport.
-        
+
         Args:
             server: MCP server instance
         """
@@ -28,10 +28,7 @@ class StdioTransport(TransportInterface):
                     ),
                 ),
             )
-    
+
     def get_transport_info(self):
         """Return stdio transport information."""
-        return {
-            "transport": "stdio",
-            "usage": "subprocess"
-        }
+        return {"transport": "stdio", "usage": "subprocess"}
