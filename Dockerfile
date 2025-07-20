@@ -45,9 +45,6 @@ COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app/src /app/src
 COPY --from=builder /app/pyproject.toml /app/uv.lock ./
 
-# Copy .env file if it exists (development convenience)
-# Environment variables take precedence over .env file
-COPY .env* ./
 
 # Create data directory and set permissions
 RUN mkdir -p /app/data && \
